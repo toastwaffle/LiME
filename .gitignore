@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Translations
+*.mo
+*.pot
+
+# virtualenv
+bin/
+share/
+lib/
+include/
+
+# pip
+pip-selfcheck.json
+
+# vim
+*.swp
+
+# config submodule
+lime/config/
