@@ -10,6 +10,7 @@ import flask_migrate
 
 from lime import app
 from lime.database import db
+from lime.scripts import run_bpython
 from lime.system import setup
 
 LIME_DIR = os.path.realpath(__file__).replace('command.py', 'lime')
@@ -51,6 +52,7 @@ MANAGER = flask_script.Manager(get_app, with_default_commands=False)
 MANAGER.add_option('config', default=None,
                    help="Configuration file to load before running commands")
 
+MANAGER.add_command('bpython', run_bpython.BpythonCommand)
 MANAGER.add_command('db', flask_migrate.MigrateCommand)
 MANAGER.add_command('run', flask_script.Server)
 
