@@ -1,0 +1,8 @@
+bpython
+flask
+flask-migrate
+flask-sqlalchemy
+newrelic
+pip-tools
+pygresql
+pylint
