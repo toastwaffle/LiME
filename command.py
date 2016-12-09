@@ -10,6 +10,7 @@ import flask_migrate
 
 from lime import app
 from lime.database import db
+from lime.database import models # pylint: disable=unused-import
 from lime.scripts import cron
 from lime.scripts import run_bpython
 from lime.system import setup
