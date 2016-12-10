@@ -1,5 +1,6 @@
 bpython
 flask
+flask-bcrypt
 flask-migrate
 flask-script
 flask-sqlalchemy
