@@ -138,7 +138,7 @@ ignored-classes=optparse.Values,thread._local,_thread._local
 # List of members which are set dynamically and missed by pylint inference
 # system, and so shouldn't trigger E1101 when accessed. Python regular
 # expressions are accepted.
-generated-members=
+generated-members=^get_by_[a-z_]+$
 
 # List of decorators that produce context managers, such as
 # contextlib.contextmanager. Add to this list to register other decorators that
@@ -217,7 +217,7 @@ max-module-lines=1000
 indent-string='  '
 
 # Number of spaces of indent required inside a hanging  or continued line.
-indent-after-paren=2
+indent-after-paren=4
 
 # Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
 expected-line-ending-format=LF
