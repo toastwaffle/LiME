@@ -1,13 +1,8 @@
 # coding: utf-8
 """Functions for setting up components of the system."""
 
-import inspect
-
-import flask
-
 from .. import app
-from ..views import all_views
-
+from ..util import api
 
 APP = app.APP
 
@@ -15,9 +10,9 @@ APP = app.APP
 def load_config(environment=None):
   """Load the configuration files according to the environment."""
   return (
-    APP.config.from_pyfile('config/default.py', silent=False) and
-    environment is None or
-    APP.config.from_pyfile('config/{0}.py'.format(environment), silent=False)
+      APP.config.from_pyfile('config/default.py', silent=False) and
+      environment is None or
+      APP.config.from_pyfile('config/{0}.py'.format(environment), silent=False)
   )
 
 
@@ -28,12 +23,11 @@ def configure_jinja2():
 
 
 def load_blueprints():
-  """Attach the various blueprints to the app."""
-  for _name, blueprint in inspect.getmembers(
-      all_views,
-      lambda m: isinstance(m, flask.Blueprint)
-  ):
-    app.APP.register_blueprint(blueprint)
+  """Attach the blueprints to the app."""
+  # All the views are registered as a side-effect of this import.
+  from ..views import all_views  # pylint: disable=unused-variable
+
+  APP.register_blueprint(api.API)
 
 
 def configure_app(environment=None):
