@@ -2,7 +2,7 @@
 
 
 class Error(Exception):
-  """Parent of all DB errors."""
+  """Generic error for all database modules."""
 
 
 class ObjectNotFoundError(Exception):
