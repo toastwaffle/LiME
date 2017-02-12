@@ -1,10 +1,12 @@
+bcrypt
 bpython
 flask
-flask-bcrypt
 flask-migrate
 flask-script
 flask-sqlalchemy
 newrelic
+passlib
 pip-tools
 pygresql
+pyjwt
 pylint
