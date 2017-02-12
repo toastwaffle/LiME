@@ -1,4 +1,3 @@
-# coding: utf-8
 """Proxy module to import all the view modules.
 
 Views are registered as a side-effect of importing the view modules.

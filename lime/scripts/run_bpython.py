@@ -1,4 +1,3 @@
-# coding: utf-8
 """Script to run bpython with the appropriate env."""
 
 import flask_script

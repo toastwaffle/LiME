@@ -1,4 +1,3 @@
-# coding: utf-8
 """Create the SQLAlchemy connection object."""
 
 import flask_sqlalchemy

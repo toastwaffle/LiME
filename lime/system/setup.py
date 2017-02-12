@@ -1,4 +1,3 @@
-# coding: utf-8
 """Functions for setting up components of the system."""
 
 from .. import app

@@ -1,4 +1,3 @@
-# coding: utf-8
 """Worker to run repeated tasks on a schedule."""
 
 import contextlib

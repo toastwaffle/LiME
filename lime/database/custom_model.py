@@ -1,4 +1,3 @@
-# coding: utf-8
 """Base table schema to reduce duplication."""
 
 import flask_sqlalchemy

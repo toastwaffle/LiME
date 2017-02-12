@@ -1,4 +1,3 @@
-# coding: utf-8
 """Create the application object."""
 
 import flask
