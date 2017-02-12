@@ -11,4 +11,9 @@ class User(DB.Model):
 
   name = DB.Column(DB.Unicode(200), nullable=False)
   email = DB.Column(DB.Unicode(200), nullable=False, unique=True)
-  password_hash = DB.Column(DB.LargeBinary(60), nullable=False)
+  password_hash = DB.Column(DB.Unicode(60), nullable=False)
+
+  def __init__(self, name, email, password_hash):
+    self.name = name
+    self.email = email
+    self.password_hash = password_hash

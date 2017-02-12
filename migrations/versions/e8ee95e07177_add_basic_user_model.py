@@ -1,8 +1,8 @@
 """Add basic user model
 
-Revision ID: 51d64d82d798
+Revision ID: e8ee95e07177
 Revises: 
-Create Date: 2016-12-10 22:40:16.568511
+Create Date: 2017-02-12 12:11:08.690611
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '51d64d82d798'
+revision = 'e8ee95e07177'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,7 +22,7 @@ def upgrade():
     sa.Column('object_id', sa.Integer(), nullable=False),
     sa.Column('name', sa.Unicode(length=200), nullable=False),
     sa.Column('email', sa.Unicode(length=200), nullable=False),
-    sa.Column('password_hash', sa.LargeBinary(length=60), nullable=False),
+    sa.Column('password_hash', sa.Unicode(length=60), nullable=False),
     sa.PrimaryKeyConstraint('object_id'),
     sa.UniqueConstraint('email')
     )
