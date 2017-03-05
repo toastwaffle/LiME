@@ -5,6 +5,7 @@ import json
 
 import flask
 
+from . import crossdomain
 from . import errors
 
 
@@ -114,6 +115,8 @@ def endpoint(path, require_auth=True, discard_token=False):
     return wrapped
 
   def decorator(func):
-    return API.route(path, methods=['POST'])(wrap(func))
+    return API.route(path, methods=['POST', 'OPTIONS'])(
+      crossdomain.allow(origin='*', headers=['Content-Type', 'Accept'])(
+        wrap(func)))
 
   return decorator

@@ -15,7 +15,7 @@ PASSLIB_CONTEXT = app.APP.config['PASSLIB_CONTEXT']
 @api.endpoint('/login', require_auth=False)
 def login(email, password):
   try:
-    user = models.User.get_by_email(email)
+    user = models.User.get_by(email=email)
   except db_errors.ObjectNotFoundError:
     raise util_errors.APIError('Invalid email address.', 401)
 

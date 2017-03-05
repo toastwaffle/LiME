@@ -20,15 +20,14 @@ class CustomModel(flask_sqlalchemy.Model):
     return '<{0}({1})>'.format(self.__class__.__name__, self.object_id)
 
   @classmethod
-  def get_by(cls, field, value):
+  def get_by(cls, **predicates):
     """Get an object by a unique database field."""
-    item = cls.query.filter(field == value).first()
+    item = cls.query.filter_by(**predicates).first()
 
     if not item:
       raise errors.ObjectNotFoundError(
-        'No {name} found with {field} = {value}'.format(
+        'No {name} found satisfying {predicates}'.format(
           name=cls.__name__,
-          field=field.name,
-          value=value))
+          predicates=predicates))
 
     return item
