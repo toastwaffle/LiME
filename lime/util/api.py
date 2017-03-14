@@ -41,10 +41,7 @@ class Encoder(json.JSONEncoder):
     """Convert a serializable class to a dict to be encoded into JSON."""
     try:
       identifier = _SERIALIAZABLE_CLASSES_BY_CLASS[obj.__class__]
-      return {
-          '__identifier': identifier,
-          'data': obj.to_json()
-      }
+      return dict(obj.to_json(), __identifier=identifier)
     except KeyError:
       return json.JSONEncoder.default(self, obj)
 
@@ -54,10 +51,10 @@ ENCODER = Encoder()
 
 def from_dict(data):
   """Convert a dict deserialized from JSON to the serializable class."""
-  if '__identifier' in data and 'data' in data:
+  if '__identifier' in data:
     try:
       cls = _SERIALIAZABLE_CLASSES_BY_IDENTIFIER[data['__identifier']]
-      return cls.from_json(data['data'])
+      return cls.from_json(data)
     except KeyError:
       pass
 
