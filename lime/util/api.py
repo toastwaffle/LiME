@@ -24,9 +24,6 @@ def register_serializable(_identifier=None):
     if not hasattr(cls, 'to_json'):
       raise errors.SerializationError(
           '{} must define a `to_json` method.'.format(cls.__name__))
-    if not hasattr(cls, 'from_json'):
-      raise errors.SerializationError(
-          '{} must define a `from_json` method.'.format(cls.__name__))
     if identifier in _SERIALIAZABLE_CLASSES_BY_IDENTIFIER:
       raise errors.SerializationError(
           'Identifier "{}" is already registered.'.format(identifier))
