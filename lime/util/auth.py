@@ -53,7 +53,7 @@ class JWT(object):
     if self._user is None:
       try:
         self.check_valid()
-        self._user = models.User.get_by_object_id(self.user_id)
+        self._user = models.User.get_by(object_id=self.user_id)
       except db_errors.ObjectNotFoundError as err:
         raise errors.AuthenticationError(err)
 
