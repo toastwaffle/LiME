@@ -8,13 +8,25 @@ from ..util import errors as util_errors
 
 
 @api.endpoint('/get_tasks')
-def get_tasks(token):
-  return list(token.user.tasks.all())
+def get_tasks(token, parent_id=None):
+  if parent_id is None:
+    return list(token.user.tasks.filter_by(parent_id=None).all())
+
+  try:
+    task = models.Task.get_by(object_id=parent_id)
+  except db_errors.ObjectNotFoundError:
+    raise util_errors.APIError(
+        'Could not get tasks; parent task not found', 410)
+
+  if task.owner_id != token.user_id:
+    raise util_errors.APIError('Could not get tasks; not authorized', 403)
+
+  return task.children or []
 
 
 @api.endpoint('/add_task')
-def add_task(token, title):
-  task = models.Task(owner=token.user, title=title)
+def add_task(token, title, parent_id=None):
+  task = models.Task(owner=token.user, title=title, parent_id=parent_id)
 
   db.DB.session.add(task)
   db.DB.session.commit()
