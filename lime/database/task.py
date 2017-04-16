@@ -13,6 +13,7 @@ class Task(DB.Model):
 
   # Fields
   title = DB.Column(DB.Unicode(200), nullable=False)
+  completed = DB.Column(DB.Boolean(), nullable=False, default=False)
 
   # Relation IDs
   owner_id = DB.Column(
@@ -34,5 +35,5 @@ class Task(DB.Model):
         'object_id': self.object_id,
         'owner_id': self.owner_id,
         'title': self.title,
+        'completed': self.completed
     }
-

@@ -36,3 +36,22 @@ def delete_task(token, task_id):
   db.DB.session.commit()
 
   return {}
+
+
+@api.endpoint('/set_completed_state')
+def set_completed_state(token, task_id, completed):
+  try:
+    task = models.Task.get_by(object_id=task_id)
+  except db_errors.ObjectNotFoundError:
+    raise util_errors.APIError(
+        'Could not set task completed state; task not found', 410)
+
+  if task.owner_id != token.user_id:
+    raise util_errors.APIError(
+        'Could not set task completed state; not authorized', 403)
+
+  task.completed = completed
+
+  db.DB.session.commit()
+
+  return task
