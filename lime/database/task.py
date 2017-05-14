@@ -1,5 +1,7 @@
 """Model for tasks."""
 
+import sqlalchemy
+
 from . import db
 from ..util import api
 
@@ -34,11 +36,19 @@ class Task(DB.Model):
       'Task',
       backref=DB.backref(
           'children',
-          uselist=True
+          lazy='dynamic'
       ),
       foreign_keys=[parent_id],
       remote_side='Task.object_id'
   )
+
+  @property
+  def has_children(self):
+    return DB.session.query(
+        sqlalchemy.literal(True)
+    ).filter(
+        self.children.exists()
+    ).scalar()
 
   def to_json(self):
     """Converts the task to a JSON serializable object."""
@@ -47,5 +57,6 @@ class Task(DB.Model):
         'owner_id': self.owner_id,
         'parent_id': self.parent_id,
         'title': self.title,
-        'completed': self.completed
+        'completed': self.completed,
+        'has_children': self.has_children,
     }

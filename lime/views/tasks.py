@@ -21,7 +21,7 @@ def get_tasks(token, parent_id=None):
   if task.owner_id != token.user_id:
     raise util_errors.APIError('Could not get tasks; not authorized', 403)
 
-  return task.children or []
+  return task.children.all() or []
 
 
 @api.endpoint('/add_task')
