@@ -24,6 +24,19 @@ def get_tasks(token, parent_id=None):
   return task.children.all() or []
 
 
+@api.endpoint('/get_task')
+def get_task(token, task_id):
+  try:
+    task = models.Task.get_by(object_id=task_id)
+  except db_errors.ObjectNotFoundError:
+    raise util_errors.APIError('Could not get task; task not found', 410)
+
+  if task.owner_id != token.user_id:
+    raise util_errors.APIError('Could not get task; not authorized', 403)
+
+  return task
+
+
 @api.endpoint('/add_task')
 def add_task(token, title, parent_id=None):
   task = models.Task(owner=token.user, title=title, parent_id=parent_id)
