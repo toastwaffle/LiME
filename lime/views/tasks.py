@@ -48,7 +48,7 @@ def add_task(token, title, parent_id=None):
 
 
 @api.endpoint('/delete_task')
-def delete_task(token, task_id):
+def delete_task(token, task_id, cascade=False):
   try:
     task = models.Task.get_by(object_id=task_id)
   except db_errors.ObjectNotFoundError:
@@ -56,6 +56,10 @@ def delete_task(token, task_id):
 
   if task.owner_id != token.user_id:
     raise util_errors.APIError('Could not delete task; not authorized', 403)
+
+  if not cascade:
+    for child in task.children:
+      child.parent = task.parent
 
   db.DB.session.delete(task)
   db.DB.session.commit()
