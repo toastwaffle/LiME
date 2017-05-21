@@ -19,16 +19,20 @@ class Task(DB.Model):
 
   # Relation IDs
   owner_id = DB.Column(
-      DB.Integer(), DB.ForeignKey('user.object_id'), nullable=False)
+      DB.Integer(), DB.ForeignKey('user.object_id', ondelete="CASCADE"),
+      nullable=False)
   parent_id = DB.Column(
-      DB.Integer(), DB.ForeignKey('task.object_id'), nullable=True)
+      DB.Integer(),
+      DB.ForeignKey('task.object_id', ondelete="CASCADE"),
+      nullable=True)
 
   # Relations
   owner = DB.relationship(
       'User',
       backref=DB.backref(
           'tasks',
-          lazy='dynamic'
+          lazy='dynamic',
+          passive_deletes='all'
       ),
       foreign_keys=[owner_id]
   )
@@ -36,7 +40,8 @@ class Task(DB.Model):
       'Task',
       backref=DB.backref(
           'children',
-          lazy='dynamic'
+          lazy='dynamic',
+          passive_deletes='all'
       ),
       foreign_keys=[parent_id],
       remote_side='Task.object_id'
