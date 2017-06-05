@@ -1,5 +1,6 @@
 """Handlers for JSON based API endpoints."""
 
+import enum
 import functools
 import json
 
@@ -39,6 +40,9 @@ def register_serializable(_identifier=None):
 class Encoder(json.JSONEncoder):
   def default(self, obj):
     """Convert a serializable class to a dict to be encoded into JSON."""
+    if isinstance(obj, enum.Enum):
+      return obj.value
+
     try:
       identifier = _SERIALIAZABLE_CLASSES_BY_CLASS[obj.__class__]
       return dict(obj.to_json(), __identifier=identifier)
