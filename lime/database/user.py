@@ -1,6 +1,7 @@
 """Model for users."""
 
 from . import db
+from ..util import settings
 
 DB = db.DB
 
@@ -13,3 +14,7 @@ class User(DB.Model):
   name = DB.Column(DB.Unicode(200), nullable=False)
   email = DB.Column(DB.Unicode(200), nullable=False, unique=True)
   password_hash = DB.Column(DB.Unicode(60), nullable=False)
+
+  @property
+  def settings(self):
+    return settings.SettingsManager(self)
