@@ -1,5 +1,7 @@
 """Views for authentication."""
 
+from sqlalchemy import exc as sqlalchemy_exc
+
 from .. import app
 from ..database import db
 from ..database import errors as db_errors
@@ -35,6 +37,11 @@ def register(name, email, password):
                      password_hash=PASSLIB_CONTEXT.hash(password))
 
   db.DB.session.add(user)
-  db.DB.session.commit()
+
+  try:
+    db.DB.session.commit()
+  except sqlalchemy_exc.IntegrityError:
+    db.DB.session.rollback()
+    raise util_errors.APIError('Email address already in use.', 400)
 
   return auth.JWT.from_user(user)
