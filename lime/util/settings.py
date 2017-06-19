@@ -38,7 +38,7 @@ class SettingDescriptor(object):
     self.vtype = vtype
     self.default = default
 
-  def __set_name__(self, unused_manager, name):
+  def __set_name__(self, unused_manager_type, name):
     self.key = name
 
   def __get__(self, manager, unused_manager_type=None):
@@ -139,5 +139,7 @@ class SettingsManager(object):
 
   def to_json(self):
     return {
-      'deletion_behaviour': self.deletion_behaviour,
+        name: getattr(self, name)
+        for name, attr in SettingsManager.__dict__.items()
+        if isinstance(attr, SettingDescriptor)
     }
