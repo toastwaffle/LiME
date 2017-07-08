@@ -24,7 +24,34 @@ def _check_value_type(value, expected_type):
         value, expected_type))
 
 
-class SettingDescriptor(object):
+class _Descriptor(object):
+  """Parent type for all descriptors used for settings.
+
+  Supports enumeration in SettingManager.to_json.
+  """
+
+
+class UserFieldDescriptor(_Descriptor):
+  """Defines a setting which is stored as a field on the User object."""
+
+  def __init__(self, vtype):
+    self.key = None
+    self.vtype = vtype
+
+  def __set_name__(self, unused_manager_type, name):
+    self.key = name
+
+  def __get__(self, manager, unused_manager_type=None):
+    return getattr(manager.user, self.key)
+
+  def __set__(self, manager, value):
+    _check_value_type(value, self.vtype)
+
+    setattr(manager.user, self.key, value)
+    db.DB.session.commit()
+
+
+class SettingDescriptor(_Descriptor):
   """Defines a setting with the given type and optional default value.
 
   This class creates a database Setting object when setting a previously unset
@@ -127,6 +154,8 @@ class EnumDescriptor(SettingDescriptor):
 class SettingsManager(object):
   """Helper class for handling user settings."""
 
+  name = UserFieldDescriptor(str)
+  email = UserFieldDescriptor(str)
   deletion_behaviour = EnumDescriptor(enums.DeletionBehaviour,
                                       enums.DeletionBehaviour.ASK)
 
@@ -141,5 +170,5 @@ class SettingsManager(object):
     return {
         name: getattr(self, name)
         for name, attr in SettingsManager.__dict__.items()
-        if isinstance(attr, SettingDescriptor)
+        if isinstance(attr, _Descriptor)
     }
