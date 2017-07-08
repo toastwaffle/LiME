@@ -8,6 +8,14 @@ from ..util import api
 DB = db.DB
 
 
+ORDERING_LINK = DB.Table(
+    'ordering_link',
+    DB.Model.metadata,
+    DB.Column('before_id', DB.Integer, DB.ForeignKey('task.object_id')),
+    DB.Column('after_id', DB.Integer, DB.ForeignKey('task.object_id'))
+)
+
+
 @api.register_serializable()
 class Task(DB.Model):
   """Model for tasks."""
@@ -45,6 +53,21 @@ class Task(DB.Model):
       ),
       foreign_keys=[parent_id],
       remote_side='Task.object_id'
+  )
+  after = DB.relationship(
+      'Task',
+      backref=DB.backref(
+          'before',
+          uselist=False,
+          lazy='joined',
+          join_depth=1
+      ),
+      secondary=ORDERING_LINK,
+      primaryjoin="Task.object_id == ordering_link.c.before_id",
+      secondaryjoin="Task.object_id == ordering_link.c.after_id",
+      uselist=False,
+      lazy='joined',
+      join_depth=1
   )
 
   @property
