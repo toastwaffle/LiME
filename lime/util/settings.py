@@ -158,6 +158,7 @@ class SettingsManager(object):
   email = UserFieldDescriptor(str)
   deletion_behaviour = EnumDescriptor(enums.DeletionBehaviour,
                                       enums.DeletionBehaviour.ASK)
+  language = EnumDescriptor(enums.Language, enums.Language.EN_GB)
 
   def __init__(self, user):
     self.user = user
