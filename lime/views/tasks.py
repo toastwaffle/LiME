@@ -82,17 +82,29 @@ def delete_task(token, task_id, cascade=False):
   if task.owner_id != token.user_id:
     raise util_errors.APIError('Could not delete task; not authorized', 403)
 
-  mutated = [] if task.parent is None else [task.parent]
+  mutated = [task.parent, task.before, task.after]
 
-  if not cascade:
+  if cascade:
+    if task.before is not None:
+      task.before.after = task.after
+    elif task.after is not None:
+      task.after.before = None
+  else:
     for child in task.children:
       child.parent = task.parent
+
+      if child.before is None:
+        child.before = task.before
+
+      if child.after is None:
+        child.after = task.after
+
       mutated.append(child)
 
   db.DB.session.delete(task)
   db.DB.session.commit()
 
-  return mutated
+  return [m for m in mutated if m is not None]
 
 
 @api.endpoint('/set_completed_state')
