@@ -80,6 +80,8 @@ class Task(DB.Model):
 
   def to_json(self):
     """Converts the task to a JSON serializable object."""
+    before_id = self.before.object_id if self.before is not None else None
+    after_id = self.after.object_id if self.after is not None else None
     return {
         'object_id': self.object_id,
         'owner_id': self.owner_id,
@@ -87,4 +89,6 @@ class Task(DB.Model):
         'title': self.title,
         'completed': self.completed,
         'has_children': self.has_children,
+        'before_id': before_id,
+        'after_id': after_id,
     }
