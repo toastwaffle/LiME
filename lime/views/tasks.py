@@ -34,17 +34,24 @@ def get_task(token, task_id):
   if task.owner_id != token.user_id:
     raise util_errors.APIError('Could not get task; not authorized', 403)
 
-  return task
+  return [task]
 
 
 @api.endpoint('/add_task')
 def add_task(token, title, parent_id=None):
-  task = models.Task(owner=token.user, title=title, parent_id=parent_id)
+  try:
+    before = models.Task.get_by(
+        owner=token.user, parent_id=parent_id, after=None)
+  except db_errors.ObjectNotFoundError:
+    before = None
+
+  task = models.Task(
+      owner=token.user, title=title, parent_id=parent_id, before=before)
 
   db.DB.session.add(task)
   db.DB.session.commit()
 
-  return task
+  return [before, task]
 
 
 @api.endpoint('/delete_task')
@@ -83,4 +90,4 @@ def set_completed_state(token, task_id, completed):
 
   db.DB.session.commit()
 
-  return task
+  return [task]
