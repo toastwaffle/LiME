@@ -39,9 +39,25 @@ def get_task(token, task_id):
 
 @api.endpoint('/add_task')
 def add_task(token, title, parent_id=None):
+  mutated = []
+
+  if parent_id is not None:
+    try:
+      parent = models.Task.get_by(object_id=parent_id)
+    except db_errors.ObjectNotFoundError:
+      raise util_errors.APIError(
+          'Could not add task; parent task not found', 410)
+
+    if parent.owner_id != token.user_id:
+      raise util_errors.APIError('Could not add task; not authorized', 403)
+
+    mutated.append(parent)
+
   try:
     before = models.Task.get_by(
         owner=token.user, parent_id=parent_id, after=None)
+
+    mutated.append(before)
   except db_errors.ObjectNotFoundError:
     before = None
 
@@ -51,7 +67,9 @@ def add_task(token, title, parent_id=None):
   db.DB.session.add(task)
   db.DB.session.commit()
 
-  return [before, task]
+  mutated.append(task)
+
+  return mutated
 
 
 @api.endpoint('/delete_task')
