@@ -124,3 +124,62 @@ def set_completed_state(token, task_id, completed):
   db.DB.session.commit()
 
   return [task]
+
+@api.endpoint('/reorder_task')
+def reorder_task(token, task_id, before_id=None, after_id=None):
+  if before_id is None and after_id is None:
+    raise util_errors.APIError(
+        'One of before_id or after_id must be provided', 400)
+
+  before = None
+  after = None
+
+  if before_id is not None:
+    try:
+      before = models.Task.get_by(object_id=before_id)
+    except db_errors.ObjectNotFoundError:
+      raise util_errors.APIError(
+          'Could not reorder task; before task not found', 410)
+
+  if after_id is not None:
+    try:
+      after = models.Task.get_by(object_id=after_id)
+    except db_errors.ObjectNotFoundError:
+      raise util_errors.APIError(
+          'Could not reorder task; after task not found', 410)
+
+  if before is None:
+    before = after.before
+
+  if after is None:
+    after = before.after
+
+  if (
+      before is not None and before.after is not after) or (
+      after is not None and after.before is not before):
+    raise util_errors.APIError(
+        'Before and after tasks are not adjacent', 400)
+
+  try:
+    task = models.Task.get_by(object_id=task_id)
+  except db_errors.ObjectNotFoundError:
+    raise util_errors.APIError(
+        'Could not reorder task; task not found', 410)
+
+  mutated = [
+      m
+      for m in set([before, after, task, task.before, task.after])
+      if m is not None
+  ]
+
+  if task.before is not None:
+    task.before.after = task.after
+  elif task.after is not None:
+    task.after.before = None
+
+  task.before = before
+  task.after = after
+
+  db.DB.session.commit()
+
+  return mutated
