@@ -113,6 +113,7 @@ def set_completed_state(token, task_id, completed):
 
   return [task]
 
+
 @api.endpoint('/reorder_task')
 def reorder_task(token, task_id, before_id=None, after_id=None):
   if before_id is None and after_id is None:
