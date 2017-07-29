@@ -7,51 +7,53 @@ from ..util import api
 from ..util import errors as util_errors
 
 
+def check_owner(token, action, *tasks):
+  for task in tasks:
+    if task is None:
+      continue
+
+    if task.owner_id != token.user_id:
+      raise util_errors.APIError(
+          'Could not {}; not authorized'.format(action), 403)
+
+
+def load_tasks(token, action, *task_ids):
+  tasks = []
+
+  for task_id in task_ids:
+    if task_id is None:
+      tasks.append(None)
+      continue
+
+    try:
+      tasks.append(models.Task.get_by(object_id=task_id))
+    except db_errors.ObjectNotFoundError:
+      raise util_errors.APIError(
+          'Could not {0}; task {1} not found'.format(action, task_id), 410)
+
+  check_owner(token, action, *tasks)
+
+  return tasks
+
+
 @api.endpoint('/get_tasks')
 def get_tasks(token, parent_id=None):
   if parent_id is None:
     return list(token.user.tasks.filter_by(parent_id=None).all())
 
-  try:
-    task = models.Task.get_by(object_id=parent_id)
-  except db_errors.ObjectNotFoundError:
-    raise util_errors.APIError(
-        'Could not get tasks; parent task not found', 410)
+  (parent,) = load_tasks(token, 'get tasks', parent_id)
 
-  if task.owner_id != token.user_id:
-    raise util_errors.APIError('Could not get tasks; not authorized', 403)
-
-  return task.children.all() or []
+  return parent.children.all() or []
 
 
 @api.endpoint('/get_task')
 def get_task(token, task_id):
-  try:
-    task = models.Task.get_by(object_id=task_id)
-  except db_errors.ObjectNotFoundError:
-    raise util_errors.APIError('Could not get task; task not found', 410)
-
-  if task.owner_id != token.user_id:
-    raise util_errors.APIError('Could not get task; not authorized', 403)
-
-  return [task]
+  return load_tasks(token, 'get task', task_id)
 
 
 @api.endpoint('/add_task')
 def add_task(token, title, parent_id=None):
-  mutated = []
-
-  if parent_id is not None:
-    try:
-      parent = models.Task.get_by(object_id=parent_id)
-    except db_errors.ObjectNotFoundError:
-      raise util_errors.APIError(
-          'Could not add task; parent task not found', 410)
-
-    if parent.owner_id != token.user_id:
-      raise util_errors.APIError('Could not add task; not authorized', 403)
-
-    mutated.append(parent)
+  mutated = load_tasks(token, 'get tasks', parent_id)
 
   try:
     before = models.Task.get_by(
@@ -69,18 +71,12 @@ def add_task(token, title, parent_id=None):
 
   mutated.append(task)
 
-  return mutated
+  return [m for m in set(mutated) if m is not None]
 
 
 @api.endpoint('/delete_task')
 def delete_task(token, task_id, cascade=False):
-  try:
-    task = models.Task.get_by(object_id=task_id)
-  except db_errors.ObjectNotFoundError:
-    raise util_errors.APIError('Could not delete task; task not found', 410)
-
-  if task.owner_id != token.user_id:
-    raise util_errors.APIError('Could not delete task; not authorized', 403)
+  (task,) = load_tasks(token, 'get tasks', task_id)
 
   mutated = [task.parent, task.before, task.after]
 
@@ -104,20 +100,12 @@ def delete_task(token, task_id, cascade=False):
   db.DB.session.delete(task)
   db.DB.session.commit()
 
-  return [m for m in mutated if m is not None]
+  return [m for m in set(mutated) if m is not None]
 
 
 @api.endpoint('/set_completed_state')
 def set_completed_state(token, task_id, completed):
-  try:
-    task = models.Task.get_by(object_id=task_id)
-  except db_errors.ObjectNotFoundError:
-    raise util_errors.APIError(
-        'Could not set task completed state; task not found', 410)
-
-  if task.owner_id != token.user_id:
-    raise util_errors.APIError(
-        'Could not set task completed state; not authorized', 403)
+  (task,) = load_tasks(token, 'get tasks', task_id)
 
   task.completed = completed
 
@@ -134,19 +122,8 @@ def reorder_task(token, task_id, before_id=None, after_id=None):
   before = None
   after = None
 
-  if before_id is not None:
-    try:
-      before = models.Task.get_by(object_id=before_id)
-    except db_errors.ObjectNotFoundError:
-      raise util_errors.APIError(
-          'Could not reorder task; before task not found', 410)
-
-  if after_id is not None:
-    try:
-      after = models.Task.get_by(object_id=after_id)
-    except db_errors.ObjectNotFoundError:
-      raise util_errors.APIError(
-          'Could not reorder task; after task not found', 410)
+  (task, before, after) = load_tasks(
+      token, 'get tasks', task_id, before_id, after_id)
 
   if before is None:
     before = after.before
@@ -160,11 +137,6 @@ def reorder_task(token, task_id, before_id=None, after_id=None):
     raise util_errors.APIError(
         'Before and after tasks are not adjacent', 400)
 
-  try:
-    task = models.Task.get_by(object_id=task_id)
-  except db_errors.ObjectNotFoundError:
-    raise util_errors.APIError(
-        'Could not reorder task; task not found', 410)
 
   mutated = [
       m
