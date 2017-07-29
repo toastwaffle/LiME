@@ -141,12 +141,14 @@ def reorder_task(token, task_id, before_id=None, after_id=None):
     raise util_errors.APIError(
         'Before and after tasks are not adjacent', 400)
 
+  mutated = [before, after, task, task.before, task.after]
 
-  mutated = [
-      m
-      for m in set([before, after, task, task.before, task.after])
-      if m is not None
-  ]
+  if before is not None and task.parent is not before.parent:
+    mutated.extend([task.parent, before.parent])
+    task.parent = before.parent
+  elif after is not None and task.parent is not after.parent:
+    mutated.extend([task.parent, after.parent])
+    task.parent = after.parent
 
   if task.before is not None:
     task.before.after = task.after
@@ -158,4 +160,4 @@ def reorder_task(token, task_id, before_id=None, after_id=None):
 
   db.DB.session.commit()
 
-  return mutated
+  return [m for m in set(mutated) if m is not None]
