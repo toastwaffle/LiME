@@ -119,6 +119,10 @@ def reorder_task(token, task_id, before_id=None, after_id=None):
     raise util_errors.APIError(
         'One of before_id or after_id must be provided', 400)
 
+  if task_id == before_id or task_id == after_id:
+    raise util_errors.APIError(
+        'Task cannot be before or after itself', 400)
+
   before = None
   after = None
 
