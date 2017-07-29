@@ -36,6 +36,18 @@ def load_tasks(token, action, *task_ids):
   return tasks
 
 
+def check_reparent(task, new_parent):
+  parent = new_parent
+
+  while parent is not None:
+    if task is parent:
+      raise util_errors.APIError(
+          'Cannot make task its own descendant', 400)
+    parent = parent.parent
+
+  task.parent = new_parent
+
+
 @api.endpoint('/get_tasks')
 def get_tasks(token, parent_id=None):
   if parent_id is None:
@@ -146,10 +158,10 @@ def reorder_task(token, task_id, before_id=None, after_id=None):
 
   if before is not None and task.parent is not before.parent:
     mutated.extend([task.parent, before.parent])
-    task.parent = before.parent
+    check_reparent(task, before.parent)
   elif after is not None and task.parent is not after.parent:
     mutated.extend([task.parent, after.parent])
-    task.parent = after.parent
+    check_reparent(task, after.parent)
 
   if task.before is not None:
     task.before.after = task.after
@@ -179,7 +191,8 @@ def reparent_task(token, task_id, parent_id):
   elif task.after is not None:
     task.after.before = None
 
-  task.parent = parent
+  check_reparent(task, parent)
+
   task.before = None
   task.after = None
 
