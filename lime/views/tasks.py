@@ -186,12 +186,12 @@ def reparent_task(token, task_id, parent_id):
     raise util_errors.APIError(
         'Parent already has children. Use /reorder_task instead', 400)
 
+  check_reparent(task, parent)
+
   if task.before is not None:
     task.before.after = task.after
   elif task.after is not None:
     task.after.before = None
-
-  check_reparent(task, parent)
 
   task.before = None
   task.after = None
