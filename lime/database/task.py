@@ -11,8 +11,8 @@ DB = db.DB
 ORDERING_LINK = DB.Table(
     'ordering_link',
     DB.Model.metadata,
-    DB.Column('before_id', DB.Integer, DB.ForeignKey('task.object_id')),
-    DB.Column('after_id', DB.Integer, DB.ForeignKey('task.object_id'))
+    DB.Column('before_id', DB.Integer, DB.ForeignKey('task.object_id', ondelete='CASCADE')),
+    DB.Column('after_id', DB.Integer, DB.ForeignKey('task.object_id', ondelete='CASCADE'))
 )
 
 
