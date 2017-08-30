@@ -115,11 +115,16 @@ def delete_task(token, task_id, cascade=False):
   return [m for m in set(mutated) if m is not None]
 
 
-@api.endpoint('/set_completed_state')
-def set_completed_state(token, task_id, completed):
+@api.endpoint('/update_task')
+def update_task(token, task_id, **kwargs):
   (task,) = load_tasks(token, 'get tasks', task_id)
 
-  task.completed = completed
+  for key, value in kwargs.items():
+    try:
+      setattr(task, key, value)
+    except AttributeError:
+      raise util_errors.APIError(
+          'Could not set attribute {}'.format(key), 400)
 
   db.DB.session.commit()
 
