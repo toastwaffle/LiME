@@ -20,6 +20,19 @@ ORDERING_LINK = DB.Table(
 class Task(DB.Model):
   """Model for tasks."""
   __tablename__ = 'task'
+  __json_fields__ = [
+      # Fields
+      'title',
+      'completed',
+      'notes',
+      # Relation IDs
+      'owner_id',
+      'parent_id',
+      # Properties
+      'has_children',
+      'before_id',
+      'after_id',
+  ]
 
   # Fields
   title = DB.Column(DB.Unicode(200), nullable=False)
@@ -79,18 +92,10 @@ class Task(DB.Model):
         self.children.exists()
     ).scalar()
 
-  def to_json(self):
-    """Converts the task to a JSON serializable object."""
-    before_id = self.before.object_id if self.before is not None else None
-    after_id = self.after.object_id if self.after is not None else None
-    return {
-        'object_id': self.object_id,
-        'owner_id': self.owner_id,
-        'parent_id': self.parent_id,
-        'title': self.title,
-        'completed': self.completed,
-        'has_children': self.has_children,
-        'before_id': before_id,
-        'after_id': after_id,
-        'notes': self.notes,
-    }
+  @property
+  def before_id(self):
+    return self.before.object_id if self.before is not None else None
+
+  @property
+  def after_id(self):
+    return self.after.object_id if self.after is not None else None

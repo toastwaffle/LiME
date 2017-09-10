@@ -35,3 +35,14 @@ class CustomModel(flask_sqlalchemy.Model):
           predicates=predicates))
 
     return item
+
+  def to_json(self):
+    """Converts the model to a JSON serializable dictionary.
+
+    Relies on the __json_fields__ attribute on the model class; we let the
+    AttributeError stop JSON encoding if it or other attributes are not found.
+    """
+    return {
+      key: getattr(self, key)
+      for key in self.__json_fields__ + ['object_id']
+    }
