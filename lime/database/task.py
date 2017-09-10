@@ -24,6 +24,7 @@ class Task(DB.Model):
   # Fields
   title = DB.Column(DB.Unicode(200), nullable=False)
   completed = DB.Column(DB.Boolean(), nullable=False, default=False)
+  notes = DB.Column(DB.UnicodeText(), nullable=False, default='')
 
   # Relation IDs
   owner_id = DB.Column(
@@ -91,4 +92,5 @@ class Task(DB.Model):
         'has_children': self.has_children,
         'before_id': before_id,
         'after_id': after_id,
+        'notes': self.notes,
     }
