@@ -7,5 +7,6 @@ Views are registered as a side-effect of importing the view modules.
 
 from . import auth
 from . import settings
+from . import tags
 from . import tasks
 from . import test
