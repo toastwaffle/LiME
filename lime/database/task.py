@@ -9,7 +9,7 @@ DB = db.DB
 
 
 ORDERING_LINK = DB.Table(
-    'ordering_link',
+    'task_ordering_link',
     DB.Model.metadata,
     DB.Column('before_id', DB.Integer, DB.ForeignKey('task.object_id', ondelete='CASCADE')),
     DB.Column('after_id', DB.Integer, DB.ForeignKey('task.object_id', ondelete='CASCADE'))
@@ -77,8 +77,8 @@ class Task(DB.Model):
           join_depth=1
       ),
       secondary=ORDERING_LINK,
-      primaryjoin="Task.object_id == ordering_link.c.before_id",
-      secondaryjoin="Task.object_id == ordering_link.c.after_id",
+      primaryjoin="Task.object_id == task_ordering_link.c.before_id",
+      secondaryjoin="Task.object_id == task_ordering_link.c.after_id",
       uselist=False,
       lazy='joined',
       join_depth=1
