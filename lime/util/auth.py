@@ -69,3 +69,13 @@ class JWT(object):
   @classmethod
   def from_json(cls, data):
     return cls(user_id=data['user_id'], key=data['key'].encode())
+
+
+def check_owner(token, action, *objects):
+  for obj in objects:
+    if obj is None:
+      continue
+
+    if obj.owner_id != token.user_id:
+      raise errors.APIError(
+          'Could not {}; not authorized'.format(action), 403)

@@ -4,17 +4,8 @@ from ..database import db
 from ..database import errors as db_errors
 from ..database import models
 from ..util import api
+from ..util import auth
 from ..util import errors as util_errors
-
-
-def check_owner(token, action, *tasks):
-  for task in tasks:
-    if task is None:
-      continue
-
-    if task.owner_id != token.user_id:
-      raise util_errors.APIError(
-          'Could not {}; not authorized'.format(action), 403)
 
 
 def load_tasks(token, action, *task_ids):
@@ -31,7 +22,7 @@ def load_tasks(token, action, *task_ids):
       raise util_errors.APIError(
           'Could not {0}; task {1} not found'.format(action, task_id), 410)
 
-  check_owner(token, action, *tasks)
+  auth.check_owner(token, action, *tasks)
 
   return tasks
 
