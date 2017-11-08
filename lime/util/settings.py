@@ -6,15 +6,14 @@ from . import api
 from . import errors
 from . import settings_enums as enums
 from ..database import db
-from ..database import models
-from ..database import setting
+from ..database import setting as db_setting
 
 
 _TYPE_MAP = {
-  int: setting.SettingType.INT,
-  float: setting.SettingType.FLOAT,
-  str: setting.SettingType.STRING,
-  bool: setting.SettingType.BOOL,
+  int: db_setting.SettingType.INT,
+  float: db_setting.SettingType.FLOAT,
+  str: db_setting.SettingType.STRING,
+  bool: db_setting.SettingType.BOOL,
 }
 
 
@@ -80,7 +79,7 @@ class SettingDescriptor(_Descriptor):
     try:
       setting = manager.settings[self.key]
     except KeyError:
-      setting = models.Setting(
+      setting = db_setting.Setting(
           user=manager.user,
           key=self.key,
           setting_type=_TYPE_MAP[self.vtype])
