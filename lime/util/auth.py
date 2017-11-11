@@ -40,6 +40,7 @@ class JWT(object):
     return cls(user.object_id, key, user)
 
   def check_valid(self):
+    """Assert that the token is valid."""
     try:
       jwt.decode(self.key, APP.config['JWT_SECRET'],
                  algorithms=[APP.config['JWT_ALGORITHM']],
@@ -68,10 +69,12 @@ class JWT(object):
 
   @classmethod
   def from_json(cls, data):
+    """Create the token object from the dictionary loaded from JSON."""
     return cls(user_id=data['user_id'], key=data['key'].encode())
 
 
 def check_owner(token, action, *objects):
+  """Check that all objects are owned by the token bearer."""
   for obj in objects:
     if obj is None:
       continue

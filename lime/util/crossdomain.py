@@ -3,37 +3,45 @@
 Lifted from http://flask.pocoo.org/snippets/56 on 2017-03-05.
 """
 
-from datetime import timedelta
-from flask import make_response, request, current_app
-from functools import update_wrapper
+import datetime
+import functools
+
+import flask
 
 
-def allow(origin=None, methods=None, headers=None, max_age=21600,
+def allow(origin, methods=None, headers=None, max_age=21600,
           attach_to_all=True, automatic_options=True):
+  """Create a decorator to allow cross-domain requests using Access-Control."""
+  if not isinstance(origin, (str, bytes)):
+    origin = ', '.join(origin)
+
   if methods is not None:
     methods = ', '.join(sorted(x.upper() for x in methods))
-  if headers is not None and not isinstance(headers, (str,bytes)):
+
+  if headers is not None and not isinstance(headers, (str, bytes)):
     headers = ', '.join(x.upper() for x in headers)
-  if not isinstance(origin, (str,bytes)):
-    origin = ', '.join(origin)
-  if isinstance(max_age, timedelta):
+
+  if isinstance(max_age, datetime.timedelta):
     max_age = max_age.total_seconds()
 
   def get_methods():
+    """Get allowed HTTP methods for Access-Control-Allow-Methods."""
     if methods is not None:
       return methods
 
-    options_resp = current_app.make_default_options_response()
+    options_resp = flask.current_app.make_default_options_response()
     return options_resp.headers['allow']
 
   def decorator(f):
+    """The decorator."""
     def wrapped_function(*args, **kwargs):
-      if automatic_options and request.method == 'OPTIONS':
-        resp = current_app.make_default_options_response()
+      """The wrapped function."""
+      if automatic_options and flask.request.method == 'OPTIONS':
+        resp = flask.current_app.make_default_options_response()
       else:
-        resp = make_response(f(*args, **kwargs))
+        resp = flask.make_response(f(*args, **kwargs))
 
-      if not attach_to_all and request.method != 'OPTIONS':
+      if not attach_to_all and flask.request.method != 'OPTIONS':
         return resp
 
       h = resp.headers
@@ -46,5 +54,5 @@ def allow(origin=None, methods=None, headers=None, max_age=21600,
       return resp
 
     f.provide_automatic_options = False
-    return update_wrapper(wrapped_function, f)
+    return functools.update_wrapper(wrapped_function, f)
   return decorator

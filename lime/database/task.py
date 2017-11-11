@@ -86,6 +86,7 @@ class Task(DB.Model):
 
   @property
   def has_children(self):
+    """Return whether the task has any direct children."""
     return DB.session.query(
         sqlalchemy.literal(True)
     ).filter(
@@ -94,8 +95,10 @@ class Task(DB.Model):
 
   @property
   def before_id(self):
+    """Indirect to the object ID of the preceding task, or None."""
     return self.before.object_id if self.before is not None else None
 
   @property
   def after_id(self):
+    """Indirect to the object ID of the following task, or None."""
     return self.after.object_id if self.after is not None else None

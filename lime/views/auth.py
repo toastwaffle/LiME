@@ -16,6 +16,7 @@ PASSLIB_CONTEXT = app.APP.config['PASSLIB_CONTEXT']
 
 @api.endpoint('/login', require_auth=False)
 def login(email, password):
+  """Login the user, and return a JSON Web Token."""
   try:
     user = models.User.get_by(email=email)
   except db_errors.ObjectNotFoundError:
@@ -33,6 +34,7 @@ def login(email, password):
 
 @api.endpoint('/register', require_auth=False)
 def register(name, email, password):
+  """Create a new user, and return a JSON Web Token."""
   user = models.User(name=name, email=email,
                      password_hash=PASSLIB_CONTEXT.hash(password))
 

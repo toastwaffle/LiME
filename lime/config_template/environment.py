@@ -10,5 +10,5 @@ DEBUG = True
 # SQLAlchemy
 
 SQLALCHEMY_DATABASE_URI = (
-  'postgresql+pygresql://<user>:<password>@localhost:5432/<database>'
+    'postgresql+pygresql://<user>:<password>@localhost:5432/<database>'
 )

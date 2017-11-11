@@ -38,16 +38,18 @@ def register_serializable(_identifier=None):
 
 
 class Encoder(json.JSONEncoder):
-  def default(self, obj):
+  """Custom JSON encoder for registered serializable classes."""
+
+  def default(self, o):  # Default __init__ can shadow it, but we don't - pylint: disable=method-hidden
     """Convert a serializable class to a dict to be encoded into JSON."""
-    if isinstance(obj, enum.Enum):
-      return obj.value
+    if isinstance(o, enum.Enum):
+      return o.value
 
     try:
-      identifier = _SERIALIAZABLE_CLASSES_BY_CLASS[obj.__class__]
-      return dict(obj.to_json(), __identifier=identifier)
+      identifier = _SERIALIAZABLE_CLASSES_BY_CLASS[o.__class__]
+      return dict(o.to_json(), __identifier=identifier)
     except KeyError:
-      return json.JSONEncoder.default(self, obj)
+      return json.JSONEncoder.default(self, o)
 
 
 ENCODER = Encoder()
@@ -73,12 +75,14 @@ def endpoint(path, require_auth=True, discard_token=False):
   token by default.
   """
   def parse_request():
+    """Parse the JSON or throw an exception."""
     try:
       return json.loads(flask.request.data, object_hook=from_dict)
     except json.JSONDecodeError as err:
       raise errors.APIError('Could not parse request: {}'.format(err), 400)
 
   def check_auth(request):
+    """Check that the JSON Web Token exists and is valid."""
     if 'token' not in request:
       raise errors.APIError('No authentication token provided.', 401)
 
@@ -92,8 +96,10 @@ def endpoint(path, require_auth=True, discard_token=False):
           'Could not parse authentication token: {}'.format(err), 401)
 
   def wrap(func):
+    """Wrap the API function to provide JSON interface and auth checks."""
     @functools.wraps(func)
     def wrapped():
+      """The wrapped function."""
       try:
         request = parse_request()
 
@@ -113,8 +119,9 @@ def endpoint(path, require_auth=True, discard_token=False):
     return wrapped
 
   def decorator(func):
+    """Create a decorator which sets up the route and crossdomain headers."""
     return API.route(path, methods=['POST', 'OPTIONS'])(
-      crossdomain.allow(origin='*', headers=['Content-Type', 'Accept'])(
-        wrap(func)))
+        crossdomain.allow(origin='*', headers=['Content-Type', 'Accept'])(
+            wrap(func)))
 
   return decorator

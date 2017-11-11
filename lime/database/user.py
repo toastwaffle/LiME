@@ -17,4 +17,5 @@ class User(DB.Model):
 
   @property
   def settings(self):
+    """Get a SettingsManager for this user."""
     return settings.SettingsManager(self)

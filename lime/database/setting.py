@@ -8,6 +8,7 @@ DB = db.DB
 
 
 class SettingType(enum.Enum):
+  """Value type of a setting."""
   INT = 'int_value'
   FLOAT = 'float_value'
   STRING = 'string_value'
@@ -45,8 +46,10 @@ class Setting(DB.Model):
 
   @property
   def value(self):
+    """Get the typed value of this setting."""
     return getattr(self, self.setting_type.value)
 
   @value.setter
   def value(self, val):
+    """Set the typed value of this setting."""
     return setattr(self, self.setting_type.value, val)

@@ -15,12 +15,8 @@ APP = app.APP
 def file_lock(lock_file):
   """Use a lock file to prevent multiple instances of the worker running."""
   if os.path.exists(lock_file):
-    print(
-      (
-        'Only one script can run at once. '
-        'Script is locked with {}'
-      ).format(lock_file)
-    )
+    print('Only one script can run at once. Script is locked with {}'.format(
+        lock_file))
     sys.exit(-1)
   else:
     open(lock_file, 'w').write('1')
@@ -65,7 +61,7 @@ def run_5_minutely(now):
     now: (datetime.datetime) time at which the script was started
   """
   timestamp_file = os.path.abspath(
-    './{}_cron_timestamp_5min.txt'.format(APP.config['ENVIRONMENT'])
+      './{}_cron_timestamp_5min.txt'.format(APP.config['ENVIRONMENT'])
   )
 
   if now - get_last_run_time(timestamp_file) < datetime.timedelta(minutes=5):
@@ -80,7 +76,7 @@ def run_20_minutely(now):
     now: (datetime.datetime) time at which the script was started
   """
   timestamp_file = os.path.abspath(
-    './{}_cron_timestamp_20min.txt'.format(APP.config['ENVIRONMENT'])
+      './{}_cron_timestamp_20min.txt'.format(APP.config['ENVIRONMENT'])
   )
 
   difference = now - get_last_run_time(timestamp_file)
@@ -99,7 +95,7 @@ class CronCommand(flask_script.Command):
   def run(): # false positive pylint: disable=method-hidden
     """Check the lock, do some setup and run the tasks."""
     with file_lock(
-      os.path.abspath('./{}.cron.lock'.format(APP.config['ENVIRONMENT']))
+        os.path.abspath('./{}.cron.lock'.format(APP.config['ENVIRONMENT']))
     ):
       now = datetime.datetime.utcnow()
 

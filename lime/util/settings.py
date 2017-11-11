@@ -10,10 +10,10 @@ from ..database import setting as db_setting
 
 
 _TYPE_MAP = {
-  int: db_setting.SettingType.INT,
-  float: db_setting.SettingType.FLOAT,
-  str: db_setting.SettingType.STRING,
-  bool: db_setting.SettingType.BOOL,
+    int: db_setting.SettingType.INT,
+    float: db_setting.SettingType.FLOAT,
+    str: db_setting.SettingType.STRING,
+    bool: db_setting.SettingType.BOOL,
 }
 
 
@@ -103,9 +103,9 @@ def _check_enum(enum_class):
   enum_type = type(instances[0].value)
 
   for instance in instances:
-    if type(instance.value) is not enum_type:
+    if not isinstance(instance.value, enum_type):
       raise TypeError('enum {} uses mixed types {} and {}'.format(
-        enum_class, enum_type, type(instance)))
+          enum_class, enum_type, type(instance)))
 
   if enum_type not in _TYPE_MAP:
     raise TypeError(
@@ -162,11 +162,12 @@ class SettingsManager(object):
   def __init__(self, user):
     self.user = user
     self.settings = {
-      setting.key: setting
-      for setting in user._settings.all()
+        setting.key: setting
+        for setting in user._settings.all()
     }
 
   def to_json(self):
+    """Generate a dictionary of settings for the JSON API."""
     return {
         name: getattr(self, name)
         for name, attr in SettingsManager.__dict__.items()

@@ -9,4 +9,3 @@ from . import auth
 from . import settings
 from . import tags
 from . import tasks
-from . import test

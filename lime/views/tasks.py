@@ -9,6 +9,7 @@ from ..util import errors as util_errors
 
 
 def load_tasks(token, action, *task_ids):
+  """Load a set of tasks by ID, and check they are owned by the token bearer."""
   tasks = []
 
   for task_id in task_ids:
@@ -28,6 +29,7 @@ def load_tasks(token, action, *task_ids):
 
 
 def check_reparent(task, new_parent):
+  """Reparent a task, checking for cycles."""
   parent = new_parent
 
   while parent is not None:
@@ -41,6 +43,13 @@ def check_reparent(task, new_parent):
 
 @api.endpoint('/get_tasks')
 def get_tasks(token, parent_id=None):
+  """Get all direct child tasks of the given parent.
+
+  We load the parent to assert that it exists, rather than just loading all
+  tasks with the given parent ID.
+
+  `parent_id` being None is a special case for top-level tasks.
+  """
   if parent_id is None:
     return list(token.user.tasks.filter_by(parent_id=None).all())
 
@@ -51,11 +60,13 @@ def get_tasks(token, parent_id=None):
 
 @api.endpoint('/get_task')
 def get_task(token, task_id):
+  """Load a single task."""
   return load_tasks(token, 'get task', task_id)
 
 
 @api.endpoint('/add_task')
 def add_task(token, title, parent_id=None):
+  """Add a task with the given title and parent."""
   mutated = load_tasks(token, 'get tasks', parent_id)
 
   try:
@@ -79,6 +90,12 @@ def add_task(token, title, parent_id=None):
 
 @api.endpoint('/delete_task')
 def delete_task(token, task_id, cascade=False):
+  """Delete a task.
+
+  If `cascade` is true, then all descendants of the given task are also deleted.
+  Otherwise, any child tasks are made children of the deleted task's parent, and
+  inserted in the position of the deleted task.
+  """
   (task,) = load_tasks(token, 'get tasks', task_id)
 
   mutated = [task.parent, task.before, task.after]
@@ -108,6 +125,7 @@ def delete_task(token, task_id, cascade=False):
 
 @api.endpoint('/update_task')
 def update_task(token, task_id, **kwargs):
+  """Set arbitrary fields on a task."""
   (task,) = load_tasks(token, 'get tasks', task_id)
 
   for key, value in kwargs.items():
@@ -124,6 +142,7 @@ def update_task(token, task_id, **kwargs):
 
 @api.endpoint('/reorder_task')
 def reorder_task(token, task_id, before_id=None, after_id=None):
+  """Change the position of the task in the list."""
   if before_id is None and after_id is None:
     raise util_errors.APIError(
         'One of before_id or after_id must be provided', 400)
@@ -145,8 +164,8 @@ def reorder_task(token, task_id, before_id=None, after_id=None):
     after = before.after
 
   if (
-      before is not None and before.after is not after) or (
-      after is not None and after.before is not before):
+      (before is not None and before.after is not after) or
+      (after is not None and after.before is not before)):
     raise util_errors.APIError(
         'Before and after tasks are not adjacent', 400)
 
@@ -174,6 +193,7 @@ def reorder_task(token, task_id, before_id=None, after_id=None):
 
 @api.endpoint('/reparent_task')
 def reparent_task(token, task_id, parent_id):
+  """Change the parent of a task."""
   (task, parent) = load_tasks(token, 'reparent task', task_id, parent_id)
 
   mutated = [parent, task, task.parent, task.before, task.after]
