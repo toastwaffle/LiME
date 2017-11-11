@@ -37,8 +37,8 @@ class Setting(DB.Model):
   user = DB.relationship(
       'User',
       backref=DB.backref(
-          '_settings',
-          lazy='dynamic',
+          'settings',
+          lazy='joined',
           passive_deletes='all'
       ),
       foreign_keys=[user_id]

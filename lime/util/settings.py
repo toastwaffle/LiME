@@ -1,10 +1,11 @@
-"""Helpers for handling user settings."""
+"""Descriptors and helpers for handling user settings.
+
+Intended to avoid an explosion of columns on the user object.
+"""
 
 import enum
 
-from . import api
 from . import errors
-from . import settings_enums as enums
 from ..database import db
 from ..database import setting as db_setting
 
@@ -23,34 +24,7 @@ def _check_value_type(value, expected_type):
         value, expected_type))
 
 
-class _Descriptor(object):
-  """Parent type for all descriptors used for settings.
-
-  Supports enumeration in SettingManager.to_json.
-  """
-
-
-class UserFieldDescriptor(_Descriptor):
-  """Defines a setting which is stored as a field on the User object."""
-
-  def __init__(self, vtype):
-    self.key = None
-    self.vtype = vtype
-
-  def __set_name__(self, unused_manager_type, name):
-    self.key = name
-
-  def __get__(self, manager, unused_manager_type=None):
-    return getattr(manager.user, self.key)
-
-  def __set__(self, manager, value):
-    _check_value_type(value, self.vtype)
-
-    setattr(manager.user, self.key, value)
-    db.DB.session.commit()
-
-
-class SettingDescriptor(_Descriptor):
+class SettingDescriptor(object):
   """Defines a setting with the given type and optional default value.
 
   This class creates a database Setting object when setting a previously unset
@@ -64,26 +38,25 @@ class SettingDescriptor(_Descriptor):
     self.vtype = vtype
     self.default = default
 
-  def __set_name__(self, unused_manager_type, name):
+  def __set_name__(self, unused_user_type, name):
     self.key = name
 
-  def __get__(self, manager, unused_manager_type=None):
+  def __get__(self, user, unused_user_type=None):
     try:
-      return manager.settings[self.key].value
+      return user.get_setting(self.key).value
     except KeyError:
       return self.default
 
-  def __set__(self, manager, val):
+  def __set__(self, user, val):
     _check_value_type(val, self.vtype)
 
     try:
-      setting = manager.settings[self.key]
+      setting = user.get_setting(self.key)
     except KeyError:
       setting = db_setting.Setting(
-          user=manager.user,
+          user=user,
           key=self.key,
           setting_type=_TYPE_MAP[self.vtype])
-      manager.settings[self.key] = setting
       db.DB.session.add(setting)
 
     setting.value = val
@@ -131,45 +104,19 @@ class EnumDescriptor(SettingDescriptor):
     super(EnumDescriptor, self).__init__(self.enum_type, default)
     self.enum_class = enum_class
 
-  def __get__(self, manager, manager_type=None):
-    value = super(EnumDescriptor, self).__get__(manager, manager_type)
+  def __get__(self, user, user_type=None):
+    value = super(EnumDescriptor, self).__get__(user, user_type)
     if value != None:
       return self.enum_class(value)
     return None
 
-  def __set__(self, manager, value):
+  def __set__(self, user, value):
     if isinstance(value, self.enum_class):
-      super(EnumDescriptor, self).__set__(manager, value.value)
+      super(EnumDescriptor, self).__set__(user, value.value)
     else:
       _check_value_type(value, self.enum_type)
       try:
         _ = self.enum_class(value)
       except ValueError as err:
         raise errors.APIError(err.args[0], 400)
-      super(EnumDescriptor, self).__set__(manager, value)
-
-
-@api.register_serializable()
-class SettingsManager(object):
-  """Helper class for handling user settings."""
-
-  name = UserFieldDescriptor(str)
-  email = UserFieldDescriptor(str)
-  deletion_behaviour = EnumDescriptor(enums.DeletionBehaviour,
-                                      enums.DeletionBehaviour.ASK)
-  language = EnumDescriptor(enums.Language, enums.Language.EN_GB)
-
-  def __init__(self, user):
-    self.user = user
-    self.settings = {
-        setting.key: setting
-        for setting in user._settings.all()
-    }
-
-  def to_json(self):
-    """Generate a dictionary of settings for the JSON API."""
-    return {
-        name: getattr(self, name)
-        for name, attr in SettingsManager.__dict__.items()
-        if isinstance(attr, _Descriptor)
-    }
+      super(EnumDescriptor, self).__set__(user, value)
