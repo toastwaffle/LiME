@@ -3,6 +3,7 @@
 from . import db
 from ..util import api
 from ..util import settings
+from ..util import passwords
 from ..util import settings_enums
 
 DB = db.DB
@@ -25,6 +26,9 @@ class User(DB.Model):
   name = DB.Column(DB.Unicode(200), nullable=False)
   email = DB.Column(DB.Unicode(200), nullable=False, unique=True)
   password_hash = DB.Column(DB.Unicode(60), nullable=False)
+
+  # Password magic
+  password = passwords.PasswordDescriptor()
 
   # Settings
   deletion_behaviour = settings.EnumDescriptor(
