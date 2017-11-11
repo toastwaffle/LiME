@@ -1,9 +1,11 @@
 """Functions for setting up components of the system."""
 
 from .. import app
+from ..database import db
 from ..util import api
 
 APP = app.APP
+DB = db.DB
 
 
 def load_config(environment=None):
@@ -36,5 +38,6 @@ def configure_app(environment=None):
 
   configure_jinja2()
   load_blueprints()
+  DB.init_app(APP)
 
   return True
