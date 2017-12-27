@@ -1,5 +1,7 @@
 """Handlers for JSON based API endpoints."""
 
+import typing
+
 import enum
 import functools
 import json
@@ -9,16 +11,29 @@ import flask
 from . import crossdomain
 from . import errors
 
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from typing import (
+      Any,
+      Callable,
+      Dict,
+      Optional,
+      Type,
+      TypeVar,
+      Union,
+  )
+  from . import typevars
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
 
-_SERIALIAZABLE_CLASSES_BY_CLASS = {}
-_SERIALIAZABLE_CLASSES_BY_IDENTIFIER = {}
+_SERIALIAZABLE_CLASSES_BY_CLASS: 'Dict[Type, str]' = {}
+_SERIALIAZABLE_CLASSES_BY_IDENTIFIER: 'Dict[str, Type]' = {}
 
 API = flask.Blueprint('api', 'api')
 
 
-def register_serializable(_identifier=None):
+def register_serializable(_identifier: 'Optional[str]' = None) -> 'Callable[[Type], Type]':
   """Make a decorator to register a class as JSON serialiazable."""
-  def decorator(cls):
+  def decorator(cls: 'Type') -> 'Type':
     """The decorator."""
     identifier = _identifier or cls.__name__
 
@@ -40,7 +55,7 @@ def register_serializable(_identifier=None):
 class Encoder(json.JSONEncoder):
   """Custom JSON encoder for registered serializable classes."""
 
-  def default(self, o):  # Default __init__ can shadow it, but we don't - pylint: disable=method-hidden
+  def default(self, o: 'typevars.Serializable') -> 'typevars.Serialized':  # Default __init__ can shadow it, but we don't - pylint: disable=method-hidden
     """Convert a serializable class to a dict to be encoded into JSON."""
     if isinstance(o, enum.Enum):
       return o.value
@@ -55,7 +70,7 @@ class Encoder(json.JSONEncoder):
 ENCODER = Encoder()
 
 
-def from_dict(data):
+def from_dict(data: 'Dict[str, Any]') -> 'typevars.Serializable':
   """Convert a dict deserialized from JSON to the serializable class."""
   if '__identifier' in data:
     try:
@@ -67,21 +82,21 @@ def from_dict(data):
   return data
 
 
-def endpoint(path, require_auth=True, discard_token=False):
+def endpoint(path: str, require_auth: bool = True, discard_token: bool = False) -> 'Callable':
   """Create a decorator for API methods.
 
   Reads POSTed JSON payload, decodes it, and passes the decoded data as kwargs
   to the wrapped function. Handles authentication, requiring an authentication
   token by default.
   """
-  def parse_request():
+  def parse_request() -> 'Dict[str, Any]':
     """Parse the JSON or throw an exception."""
     try:
       return json.loads(flask.request.data, object_hook=from_dict)
     except json.JSONDecodeError as err:
       raise errors.APIError('Could not parse request: {}'.format(err), 400)
 
-  def check_auth(request):
+  def check_auth(request: 'Dict[str, Any]') -> None:
     """Check that the JSON Web Token exists and is valid."""
     if 'token' not in request:
       raise errors.APIError('No authentication token provided.', 401)
@@ -95,10 +110,10 @@ def endpoint(path, require_auth=True, discard_token=False):
       raise errors.APIError(
           'Could not parse authentication token: {}'.format(err), 401)
 
-  def wrap(func):
+  def wrap(func: 'Callable') -> 'Callable':
     """Wrap the API function to provide JSON interface and auth checks."""
     @functools.wraps(func)
-    def wrapped():
+    def wrapped() -> flask.Response:
       """The wrapped function."""
       try:
         request = parse_request()
@@ -118,10 +133,10 @@ def endpoint(path, require_auth=True, discard_token=False):
 
     return wrapped
 
-  def decorator(func):
+  def decorator(func: 'Callable') -> 'Callable':
     """Create a decorator which sets up the route and crossdomain headers."""
     return API.route(path, methods=['POST', 'OPTIONS'])(
-        crossdomain.allow(origin='*', headers=['Content-Type', 'Accept'])(
+        crossdomain.allow(origins=['*'], headers=['Content-Type', 'Accept'])(
             wrap(func)))
 
   return decorator

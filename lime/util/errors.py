@@ -18,7 +18,7 @@ class APIError(Error):
 
   Sends the error message and error code (a HTTP code) to the user.
   """
-  def __init__(self, message, code):
+  def __init__(self, message: str, code: int) -> None:
     Error.__init__(self, message)
 
     self.code = code

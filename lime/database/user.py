@@ -1,10 +1,17 @@
 """Model for users."""
 
+import typing
+
 from . import db
 from ..util import api
-from ..util import settings
 from ..util import passwords
+from ..util import settings
 from ..util import settings_enums
+
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from . import setting
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
 
 DB = db.DB
 
@@ -36,14 +43,14 @@ class User(DB.Model):
   language = settings.EnumDescriptor(
       settings_enums.Language, settings_enums.Language.EN_GB)
 
-  def get_setting(self, key):
+  def get_setting(self, key: str) -> 'setting.Setting':
     """Get a setting by key.
 
     Settings are eagerly loaded to save DB queries, but making a reusable dict
     of settings is non-trivial. Instead, we do a linear search over the list.
     """
-    for setting in self.settings:
-      if setting.key == key:
-        return setting
+    for entry in self.settings:
+      if entry.key == key:
+        return entry
 
     raise KeyError('No setting found with key {}'.format(key))

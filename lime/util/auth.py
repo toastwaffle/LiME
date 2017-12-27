@@ -1,6 +1,7 @@
 """Authentication using JSON Web Tokens."""
 
 import datetime
+import typing
 
 import jwt
 
@@ -9,6 +10,17 @@ from ..database import errors as db_errors
 from ..database import models
 from . import api
 from . import errors
+
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from typing import (
+      Any,
+      Dict,
+      Optional,
+  )
+  from . import typevars
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
+
 
 APP = app.APP
 
@@ -19,13 +31,18 @@ class JWT(object):
 
   __slots__ = ['user_id', 'key', '_user']
 
-  def __init__(self, user_id, key, user=None):
+  def __init__(
+      self,
+      user_id: int,
+      key: bytes,
+      user: 'Optional[models.User]' = None
+      ) -> None:
     self.user_id = user_id
     self.key = key
     self._user = user
 
   @classmethod
-  def from_user(cls, user):
+  def from_user(cls, user: 'models.User') -> 'JWT':
     """Create a token for a user."""
     now = datetime.datetime.utcnow()
     payload = {
@@ -39,7 +56,7 @@ class JWT(object):
                      APP.config['JWT_ALGORITHM'])
     return cls(user.object_id, key, user)
 
-  def check_valid(self):
+  def check_valid(self) -> None:
     """Assert that the token is valid."""
     try:
       jwt.decode(self.key, APP.config['JWT_SECRET'],
@@ -49,7 +66,7 @@ class JWT(object):
       raise errors.AuthenticationError(err)
 
   @property
-  def user(self):
+  def user(self) -> 'models.User':
     """Get the user authorised by this token."""
     if self._user is None:
       try:
@@ -60,7 +77,7 @@ class JWT(object):
 
     return self._user
 
-  def to_json(self):
+  def to_json(self) -> 'typevars.Serializable':
     """Converts the token to a JSON serializable object."""
     return {
         'user_id': self.user_id,
@@ -68,17 +85,26 @@ class JWT(object):
     }
 
   @classmethod
-  def from_json(cls, data):
+  def from_json(cls, data: 'Dict[str, Any]') -> 'JWT':
     """Create the token object from the dictionary loaded from JSON."""
     return cls(user_id=data['user_id'], key=data['key'].encode())
 
 
-def check_owner(token, action, *objects):
+def check_owner(
+    token: 'JWT',
+    action: str,
+    *objects: 'typevars.OwnedModels'
+    ) -> None:
   """Check that all objects are owned by the token bearer."""
   for obj in objects:
     if obj is None:
       continue
 
-    if obj.owner_id != token.user_id:
+    try:
+      owner = obj.owner
+    except AttributeError:
+      owner = obj.user
+
+    if owner.object_id != token.user_id:
       raise errors.APIError(
           'Could not {}; not authorized'.format(action), 403)

@@ -1,9 +1,16 @@
 """Model for tasks."""
 
+import typing
+
 import sqlalchemy
 
 from . import db
 from ..util import api
+
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from ..util import typevars
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
 
 DB = db.DB
 
@@ -85,7 +92,7 @@ class Task(DB.Model):
   )
 
   @property
-  def has_children(self):
+  def has_children(self) -> bool:
     """Return whether the task has any direct children."""
     return DB.session.query(
         sqlalchemy.literal(True)
@@ -94,11 +101,11 @@ class Task(DB.Model):
     ).scalar()
 
   @property
-  def before_id(self):
+  def before_id(self) -> 'typevars.ObjectID':
     """Indirect to the object ID of the preceding task, or None."""
     return self.before.object_id if self.before is not None else None
 
   @property
-  def after_id(self):
+  def after_id(self) -> 'typevars.ObjectID':
     """Indirect to the object ID of the following task, or None."""
     return self.after.object_id if self.after is not None else None

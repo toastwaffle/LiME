@@ -1,19 +1,47 @@
 """Enum definitions for settings."""
 
+import typing
+
 import enum
+
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from typing import (
+      List,
+      Type,
+      Union,
+  )
+
+  SettingsEnum = Union[
+      'DeletionBehaviour',
+      'Language',
+  ]
+  SettingsEnumType = Union[
+      Type['DeletionBehaviour'],
+      Type['Language'],
+  ]
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
 
 
 class NameEnum(enum.Enum):
   """Enum class which uses the constant name as the value."""
-  def _generate_next_value_(name, unused_start, unused_count,  # Enums are weird! - pylint: disable=no-self-argument
-                            unused_last_values):
+  def _generate_next_value_(  # Enums are weird! - pylint: disable=no-self-argument
+      name: str,
+      unused_start: int,
+      unused_count: int,
+      unused_last_values: 'List[str]'
+      ) -> str:
     return name
 
 
 class LowercaseNameEnum(enum.Enum):
   """Enum class which lowercases the constant name for the value."""
-  def _generate_next_value_(name, unused_start, unused_count,  # Enums are weird! - pylint: disable=no-self-argument
-                            unused_last_values):
+  def _generate_next_value_(  # Enums are weird! - pylint: disable=no-self-argument
+      name: str,
+      unused_start: int,
+      unused_count: int,
+      unused_last_values: 'List[str]'
+      ) -> str:
     return name.lower()
 
 

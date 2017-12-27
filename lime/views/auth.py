@@ -11,7 +11,7 @@ from ..util import errors as util_errors
 
 
 @api.endpoint('/login', require_auth=False)
-def login(email, password):
+def login(email: str, password: str) -> 'auth.JWT':
   """Login the user, and return a JSON Web Token."""
   try:
     user = models.User.get_by(email=email)
@@ -25,7 +25,7 @@ def login(email, password):
 
 
 @api.endpoint('/register', require_auth=False)
-def register(name, email, password):
+def register(name: str, email: str, password: str) -> 'auth.JWT':
   """Create a new user, and return a JSON Web Token."""
   user = models.User(name=name, email=email, password=password)
 

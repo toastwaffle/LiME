@@ -1,5 +1,7 @@
 """Views for handling tasks."""
 
+import typing
+
 from ..database import db
 from ..database import errors as db_errors
 from ..database import models
@@ -7,10 +9,24 @@ from ..util import api
 from ..util import auth
 from ..util import errors as util_errors
 
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from typing import (
+      Any,
+      List,
+      Optional,
+  )
+  from ..util import typevars
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
 
-def load_tasks(token, action, *task_ids):
+
+def load_tasks(
+    token: 'auth.JWT',
+    action: str,
+    *task_ids: 'typevars.ObjectID'
+    ) -> 'List[models.Task]':
   """Load a set of tasks by ID, and check they are owned by the token bearer."""
-  tasks = []
+  tasks: 'List[models.Task]' = []
 
   for task_id in task_ids:
     if task_id is None:
@@ -28,7 +44,10 @@ def load_tasks(token, action, *task_ids):
   return tasks
 
 
-def check_reparent(task, new_parent):
+def check_reparent(
+    task: 'models.Task',
+    new_parent: 'models.Task'
+    ) -> None:
   """Reparent a task, checking for cycles."""
   parent = new_parent
 
@@ -42,7 +61,10 @@ def check_reparent(task, new_parent):
 
 
 @api.endpoint('/get_tasks')
-def get_tasks(token, parent_id=None):
+def get_tasks(
+    token: 'auth.JWT',
+    parent_id: 'Optional[typevars.ObjectID]' = None
+    ) -> 'List[models.Task]':
   """Get all direct child tasks of the given parent.
 
   We load the parent to assert that it exists, rather than just loading all
@@ -59,13 +81,20 @@ def get_tasks(token, parent_id=None):
 
 
 @api.endpoint('/get_task')
-def get_task(token, task_id):
+def get_task(
+    token: 'auth.JWT',
+    task_id: 'typevars.ObjectID'
+    ) -> 'List[models.Task]':
   """Load a single task."""
   return load_tasks(token, 'get task', task_id)
 
 
 @api.endpoint('/add_task')
-def add_task(token, title, parent_id=None):
+def add_task(
+    token: 'auth.JWT',
+    title: str,
+    parent_id: 'Optional[typevars.ObjectID]' = None
+    ) -> 'List[models.Task]':
   """Add a task with the given title and parent."""
   mutated = load_tasks(token, 'get tasks', parent_id)
 
@@ -89,7 +118,11 @@ def add_task(token, title, parent_id=None):
 
 
 @api.endpoint('/delete_task')
-def delete_task(token, task_id, cascade=False):
+def delete_task(
+    token: 'auth.JWT',
+    task_id: 'typevars.ObjectID',
+    cascade: bool = False
+    ) -> 'List[models.Task]':
   """Delete a task.
 
   If `cascade` is true, then all descendants of the given task are also deleted.
@@ -124,7 +157,11 @@ def delete_task(token, task_id, cascade=False):
 
 
 @api.endpoint('/update_task')
-def update_task(token, task_id, **kwargs):
+def update_task(
+    token: 'auth.JWT',
+    task_id: 'typevars.ObjectID',
+    **kwargs: 'Any'
+    ) -> 'List[models.Task]':
   """Set arbitrary fields on a task."""
   (task,) = load_tasks(token, 'get tasks', task_id)
 
@@ -141,7 +178,12 @@ def update_task(token, task_id, **kwargs):
 
 
 @api.endpoint('/reorder_task')
-def reorder_task(token, task_id, before_id=None, after_id=None):
+def reorder_task(
+    token: 'auth.JWT',
+    task_id: 'typevars.ObjectID',
+    before_id: 'Optional[typevars.ObjectID]' = None,
+    after_id: 'Optional[typevars.ObjectID]' = None
+    ) -> 'List[models.Task]':
   """Change the position of the task in the list."""
   if before_id is None and after_id is None:
     raise util_errors.APIError(
@@ -192,7 +234,11 @@ def reorder_task(token, task_id, before_id=None, after_id=None):
 
 
 @api.endpoint('/reparent_task')
-def reparent_task(token, task_id, parent_id):
+def reparent_task(
+    token: 'auth.JWT',
+    task_id: 'typevars.ObjectID',
+    parent_id: 'typevars.ObjectID'
+    ) -> 'List[models.Task]':
   """Change the parent of a task."""
   (task, parent) = load_tasks(token, 'reparent task', task_id, parent_id)
 

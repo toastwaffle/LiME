@@ -1,8 +1,16 @@
 """Model for user settings."""
 
 import enum
+import typing
 
 from . import db
+
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from typing import (
+      Union,
+  )
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
 
 DB = db.DB
 
@@ -45,11 +53,11 @@ class Setting(DB.Model):
   )
 
   @property
-  def value(self):
+  def value(self) -> 'Union[str, int, float, bool]':
     """Get the typed value of this setting."""
     return getattr(self, self.setting_type.value)
 
   @value.setter
-  def value(self, val):
+  def value(self, val: 'Union[str, int, float, bool]'):
     """Set the typed value of this setting."""
     return setattr(self, self.setting_type.value, val)

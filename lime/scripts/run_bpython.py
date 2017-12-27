@@ -1,11 +1,12 @@
 """Script to run bpython with the appropriate env."""
 
-import flask_script
 from bpython import curtsies
+import flask_script
 
 from lime import app
 from lime.database import db
 from lime.database import models
+
 
 class BpythonCommand(flask_script.Command):
   """Flask-Script command for running bpython with the appropriate env."""

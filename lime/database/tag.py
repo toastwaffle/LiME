@@ -1,9 +1,18 @@
 """Model for tags."""
 
-import sqlalchemy
+import typing
 
 from . import db
 from ..util import api
+
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from typing import (
+      Optional,
+  )
+  from . import user
+  from ..util import typevars
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
 
 DB = db.DB
 
@@ -65,9 +74,16 @@ class Tag(DB.Model):
   )
 
   @property
-  def before_id(self):
+  def owner(self) -> 'user.User':
+    """Get the owner of this tag via the containing group."""
+    return self.group.owner
+
+  @property
+  def before_id(self) -> 'Optional[typevars.ObjectID]':
+    """The the object ID of the preceding tag in the group."""
     return self.before.object_id if self.before is not None else None
 
   @property
-  def after_id(self):
+  def after_id(self) -> 'Optional[typevars.ObjectID]':
+    """The the object ID of the following tag in the group."""
     return self.after.object_id if self.after is not None else None

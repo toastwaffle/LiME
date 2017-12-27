@@ -1,9 +1,17 @@
 """Model for tag groups."""
 
-import sqlalchemy
+import typing
 
 from . import db
 from ..util import api
+
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from typing import (
+      List,
+  )
+  from ..util import typevars
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
 
 DB = db.DB
 
@@ -41,5 +49,6 @@ class TagGroup(DB.Model):
   )
 
   @property
-  def tag_ids(self):
+  def tag_ids(self) -> 'List[typevars.ObjectID]':
+    """Get all tag IDs in this group."""
     return [tag.object_id for tag in self.tags]

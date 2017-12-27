@@ -22,5 +22,8 @@ pip-selfcheck.json
 # vim
 *.swp
 
+# mypy
+.mypy_cache
+
 # config submodule
 lime/config/

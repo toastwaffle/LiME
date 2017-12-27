@@ -6,22 +6,23 @@ from passlib import context
 
 # General app config
 
-SECRET_KEY = ''  # use os.urandom(24) to generate
-SEND_FILE_MAX_AGE_DEFAULT = 1209600
-PREFERRED_URL_SCHEME = 'https'
+SECRET_KEY: bytes = b''  # use os.urandom(24) to generate
+SEND_FILE_MAX_AGE_DEFAULT: int = 1209600
+PREFERRED_URL_SCHEME: str = 'https'
 
 # SQLAlchemy
 
-SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_POOL_RECYCLE = 300
+SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
+SQLALCHEMY_POOL_RECYCLE: int = 300
 
 # JWT
 
-JWT_SECRET = ''  # use os.urandom(24) to generate
-JWT_ALGORITHM = 'HS512'
-JWT_EXPIRY = datetime.timedelta(days=30)
-JWT_ISSUER = 'LiME'
+JWT_SECRET: bytes = b''  # use os.urandom(24) to generate
+JWT_ALGORITHM: str = 'HS512'
+JWT_EXPIRY: datetime.timedelta = datetime.timedelta(days=30)
+JWT_ISSUER: str = 'LiME'
 
 # Passlib
 
-PASSLIB_CONTEXT = context.CryptContext(schemes=['bcrypt'], deprecated='auto')
+PASSLIB_CONTEXT: context.CryptContext = context.CryptContext(
+    schemes=['bcrypt'], deprecated='auto')

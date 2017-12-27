@@ -1,4 +1,3 @@
-# coding: utf-8
 """WSGI wrapper for LiME."""
 
 import logging

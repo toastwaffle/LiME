@@ -1,9 +1,19 @@
 """Base table schema to reduce duplication."""
 
+import typing
+
 import flask_sqlalchemy
 import sqlalchemy
 
 from . import errors
+
+# pylint: disable=unused-import,ungrouped-imports,invalid-name
+if typing.TYPE_CHECKING:
+  from typing import (
+      Dict,
+  )
+  from ..util import typevars
+# pylint: enable=unused-import,ungrouped-imports,invalid-name
 
 
 class CustomModel(flask_sqlalchemy.Model):
@@ -36,7 +46,7 @@ class CustomModel(flask_sqlalchemy.Model):
 
     return item
 
-  def to_json(self):
+  def to_json(self) -> 'Dict[str, typevars.Serializable]':
     """Converts the model to a JSON serializable dictionary.
 
     Relies on the __json_fields__ attribute on the model class; we let the
