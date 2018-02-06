@@ -28,7 +28,7 @@ lazy-object-proxy==1.3.1  # via astroid
 mako==1.0.7               # via alembic
 markupsafe==1.0           # via jinja2, mako
 mccabe==0.6.1             # via pylint
-newrelic==2.100.0.84
+newrelic==2.102.0.85
 passlib==1.7.1
 pip-tools==1.11.0
 pycparser==2.18           # via cffi
