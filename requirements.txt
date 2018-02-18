@@ -13,7 +13,7 @@ certifi==2018.1.18        # via requests
 cffi==1.11.4              # via bcrypt
 chardet==3.0.4            # via requests
 click==6.7                # via flask, pip-tools
-curtsies==0.2.11          # via bpython
+curtsies==0.3.0          # via bpython
 first==2.0.1              # via pip-tools
 flask-migrate==2.1.1
 flask-script==2.0.6
