@@ -10,7 +10,7 @@ bcrypt==3.1.4
 blessings==1.6.1          # via curtsies
 bpython==0.17.1
 certifi==2018.1.18        # via requests
-cffi==1.11.4              # via bcrypt
+cffi==1.11.5              # via bcrypt
 chardet==3.0.4            # via requests
 click==6.7                # via flask, pip-tools
 curtsies==0.3.0          # via bpython
