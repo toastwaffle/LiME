@@ -40,7 +40,7 @@ python-dateutil==2.7.2    # via alembic
 python-editor==1.0.3      # via alembic
 requests==2.18.4          # via bpython
 six==1.11.0               # via astroid, bcrypt, bpython, pip-tools, pylint, python-dateutil
-sqlalchemy==1.2.6         # via alembic, flask-sqlalchemy
+sqlalchemy==1.2.7         # via alembic, flask-sqlalchemy
 urllib3==1.22             # via requests
 wcwidth==0.1.7            # via curtsies
 werkzeug==0.14.1          # via flask
