@@ -14,6 +14,7 @@ if typing.TYPE_CHECKING:
       Dict,
       Generator,
       List,
+      Optional,
       Union,
   )
   from ..util import typevars
@@ -37,7 +38,7 @@ def get_tags_and_groups(
 
   return {
       'groups': groups,
-      'tags': list(tags_from_groups(groups)),
+      'tags': list(tags_from_groups(groups)) + list(token.user.tags.all()),
   }
 
 
@@ -59,22 +60,30 @@ def add_tag_group(
 def add_tag(
     token: 'auth.JWT',
     title: str,
-    group_id: 'typevars.ObjectID'
+    group_id: 'Optional[typevars.ObjectID]' = None
     ) -> 'List[models.TagGroup]':
   """Add a new tag in the given group."""
-  group = models.TagGroup.get_by(object_id=group_id)
-  auth.check_owner(token, 'add tag', group)
+  mutated = []
+  before = None
 
-  mutated = [group]
+  if group_id is not None:
+    owner = None
+    group = models.TagGroup.get_by(object_id=group_id)
+    auth.check_owner(token, 'add tag', group)
 
-  try:
-    before = models.Tag.get_by(group_id=group_id, after=None)
+    mutated.append(group)
 
-    mutated.append(before)
-  except db_errors.ObjectNotFoundError:
-    before = None
+    try:
+      before = models.Tag.get_by(group_id=group_id, after=None)
 
-  tag = models.Tag(group=group, title=title, before=before)
+      mutated.append(before)
+    except db_errors.ObjectNotFoundError:
+      pass
+  else:
+    owner = token.user
+    group = None
+
+  tag = models.Tag(group=group, direct_owner=owner, title=title, before=before)
 
   db.DB.session.add(tag)
   db.DB.session.commit()

@@ -2,6 +2,8 @@
 
 import typing
 
+import sqlalchemy
+
 from . import db
 from ..util import api
 
@@ -34,20 +36,38 @@ class Tag(DB.Model):
       'title',
       # Relation IDs
       'group_id',
+      'owner_id',
       # Properties
       'before_id',
       'after_id',
   ]
+  __table_args__ = (
+      sqlalchemy.CheckConstraint(
+          '(group_id IS NOT NULL) <> (owner_id IS NOT NULL)',
+          name='has_owner_xor_group'),
+  )
 
   # Fields
   title = DB.Column(DB.Unicode(200), nullable=False)
 
   # Relation IDs
+  owner_id = DB.Column(
+      DB.Integer(), DB.ForeignKey('user.object_id', ondelete="CASCADE"),
+      nullable=True)
   group_id = DB.Column(
       DB.Integer(), DB.ForeignKey('tag_group.object_id', ondelete="CASCADE"),
-      nullable=False)
+      nullable=True)
 
   # Relations
+  direct_owner = DB.relationship(
+      'User',
+      backref=DB.backref(
+          'tags',
+          lazy='dynamic',
+          passive_deletes='all'
+      ),
+      foreign_keys=[owner_id]
+  )
   group = DB.relationship(
       'TagGroup',
       backref=DB.backref(
@@ -75,8 +95,12 @@ class Tag(DB.Model):
 
   @property
   def owner(self) -> 'user.User':
-    """Get the owner of this tag via the containing group."""
-    return self.group.owner
+    """Get the owner of this tag.
+
+    Tags in groups maintain ownership via the enclosing group; standalone tags
+    use the tag's own `owner` relation.
+    """
+    return self.group.owner if self.group is not None else self.direct_owner
 
   @property
   def before_id(self) -> 'Optional[typevars.ObjectID]':
