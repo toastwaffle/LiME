@@ -39,6 +39,7 @@ class Task(DB.Model):
       'has_children',
       'before_id',
       'after_id',
+      'tag_ids',
   ]
 
   # Fields
@@ -109,3 +110,8 @@ class Task(DB.Model):
   def after_id(self) -> 'typevars.ObjectID':
     """Indirect to the object ID of the following task, or None."""
     return self.after.object_id if self.after is not None else None
+
+  @property
+  def tag_ids(self) -> 'List[typevars.ObjectID]':
+    """The the object ID of the following tag in the group."""
+    return [tag.object_id for tag in self.tags]

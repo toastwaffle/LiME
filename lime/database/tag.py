@@ -10,6 +10,7 @@ from ..util import api
 # pylint: disable=unused-import,ungrouped-imports,invalid-name
 if typing.TYPE_CHECKING:
   from typing import (
+      List,
       Optional,
   )
   from . import user
@@ -24,6 +25,14 @@ ORDERING_LINK = DB.Table(
     DB.Model.metadata,
     DB.Column('before_id', DB.Integer, DB.ForeignKey('tag.object_id', ondelete='CASCADE')),
     DB.Column('after_id', DB.Integer, DB.ForeignKey('tag.object_id', ondelete='CASCADE'))
+)
+
+
+TAG_TASK_LINK = DB.Table(
+    'tag_task_link',
+    DB.Model.metadata,
+    DB.Column('tag_id', DB.Integer, DB.ForeignKey('tag.object_id', ondelete='CASCADE')),
+    DB.Column('task_id', DB.Integer, DB.ForeignKey('task.object_id', ondelete='CASCADE'))
 )
 
 
@@ -91,6 +100,15 @@ class Tag(DB.Model):
       uselist=False,
       lazy='joined',
       join_depth=1
+  )
+  tasks = DB.relationship(
+      'Task',
+      backref=DB.backref(
+          'tags',
+          lazy='joined'
+      ),
+      secondary=ORDERING_LINK,
+      lazy='dynamic'
   )
 
   @property
