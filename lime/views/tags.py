@@ -88,3 +88,55 @@ def add_tag(
   mutated.append(tag)
 
   return [m for m in set(mutated) if m is not None]
+
+
+@api.endpoint('/add_tag_to_tasks')
+def add_tag_to_tasks(
+    token: 'auth.JWT',
+    tag_id: 'typevars.ObjectID',
+    task_ids: 'List[typevars.ObjectID]'
+    ) -> 'List[models.Task]':
+  """Add a tag to tasks, enforcing mutual exclusivity of tags in groups."""
+  (new_tag,) = auth.load_owned_objects(
+      models.Tag, token, 'add tag to tasks', tag_id)
+  tasks = auth.load_owned_objects(
+      models.Task, token, 'add tag to tasks', *task_ids)
+
+  for task in tasks:
+    if new_tag.group_id is not None:
+      try:
+        task.tags.remove([
+            tag for tag in task.tags if tag.group_id == new_tag.group_id][0])
+      except IndexError:
+        pass
+
+    task.tags.append(new_tag)
+
+  db.DB.session.commit()
+
+  return tasks
+
+
+@api.endpoint('/remove_tag_from_tasks')
+def remove_tag_from_tasks(
+    token: 'auth.JWT',
+    tag_id: 'typevars.ObjectID',
+    task_ids: 'List[typevars.ObjectID]'
+    ) -> 'List[models.Task]':
+  """Remove a tag from tasks."""
+  (tag,) = auth.load_owned_objects(
+      models.Tag, token, 'remove tag from tasks', tag_id)
+  tasks = auth.load_owned_objects(
+      models.Task, token, 'remove tag from tasks', *task_ids)
+
+  for task in tasks:
+    try:
+      task.tags.remove(tag)
+    except ValueError:
+      pass
+
+  db.DB.session.commit()
+
+  return tasks
+
+
