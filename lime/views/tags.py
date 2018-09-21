@@ -36,10 +36,7 @@ def get_tags_and_groups(
   """Get all tags and tag groups owned by the token bearer."""
   groups = list(token.user.tag_groups.all())
 
-  return {
-      'groups': groups,
-      'tags': list(tags_from_groups(groups)) + list(token.user.tags.all()),
-  }
+  return groups + list(tags_from_groups(groups)) + list(token.user.tags.all())
 
 
 @api.endpoint('/add_tag_group')
