@@ -20,30 +20,6 @@ if typing.TYPE_CHECKING:
 # pylint: enable=unused-import,ungrouped-imports,invalid-name
 
 
-def load_tasks(
-    token: 'auth.JWT',
-    action: str,
-    *task_ids: 'typevars.ObjectID'
-    ) -> 'List[models.Task]':
-  """Load a set of tasks by ID, and check they are owned by the token bearer."""
-  tasks: 'List[models.Task]' = []
-
-  for task_id in task_ids:
-    if task_id is None:
-      tasks.append(None)
-      continue
-
-    try:
-      tasks.append(models.Task.get_by(object_id=task_id))
-    except db_errors.ObjectNotFoundError:
-      raise util_errors.APIError(
-          'Could not {0}; task {1} not found'.format(action, task_id), 410)
-
-  auth.check_owner(token, action, *tasks)
-
-  return tasks
-
-
 def check_reparent(
     task: 'models.Task',
     new_parent: 'models.Task'
@@ -75,7 +51,7 @@ def get_tasks(
   if parent_id is None:
     return list(token.user.tasks.filter_by(parent_id=None).all())
 
-  (parent,) = load_tasks(token, 'get tasks', parent_id)
+  (parent,) = auth.load_owned_objects(models.Task, token, 'get tasks', parent_id)
 
   return parent.children.all() or []
 
@@ -86,7 +62,7 @@ def get_task(
     task_id: 'typevars.ObjectID'
     ) -> 'List[models.Task]':
   """Load a single task."""
-  return load_tasks(token, 'get task', task_id)
+  return auth.load_owned_objects(models.Task, token, 'get task', task_id)
 
 
 @api.endpoint('/add_task')
@@ -96,7 +72,7 @@ def add_task(
     parent_id: 'Optional[typevars.ObjectID]' = None
     ) -> 'List[models.Task]':
   """Add a task with the given title and parent."""
-  mutated = load_tasks(token, 'get tasks', parent_id)
+  mutated = auth.load_owned_objects(models.Task, token, 'get tasks', parent_id)
 
   try:
     before = models.Task.get_by(
@@ -129,7 +105,7 @@ def delete_task(
   Otherwise, any child tasks are made children of the deleted task's parent, and
   inserted in the position of the deleted task.
   """
-  (task,) = load_tasks(token, 'get tasks', task_id)
+  (task,) = auth.load_owned_objects(models.Task, token, 'get tasks', task_id)
 
   mutated = [task.parent, task.before, task.after]
 
@@ -163,7 +139,7 @@ def update_task(
     **kwargs: 'Any'
     ) -> 'List[models.Task]':
   """Set arbitrary fields on a task."""
-  (task,) = load_tasks(token, 'get tasks', task_id)
+  (task,) = auth.load_owned_objects(models.Task, token, 'get tasks', task_id)
 
   for key, value in kwargs.items():
     try:
@@ -196,8 +172,8 @@ def reorder_task(
   before = None
   after = None
 
-  (task, before, after) = load_tasks(
-      token, 'get tasks', task_id, before_id, after_id)
+  (task, before, after) = auth.load_owned_objects(
+      models.Task, token, 'get tasks', task_id, before_id, after_id)
 
   if before is None:
     before = after.before
@@ -240,7 +216,8 @@ def reparent_task(
     parent_id: 'typevars.ObjectID'
     ) -> 'List[models.Task]':
   """Change the parent of a task."""
-  (task, parent) = load_tasks(token, 'reparent task', task_id, parent_id)
+  (task, parent) = auth.load_owned_objects(
+      models.Task, token, 'reparent task', task_id, parent_id)
 
   mutated = [parent, task, task.parent, task.before, task.after]
 

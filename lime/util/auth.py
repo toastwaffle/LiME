@@ -17,6 +17,7 @@ if typing.TYPE_CHECKING:
       Any,
       Dict,
       Optional,
+      Type,
   )
   from . import typevars
 # pylint: enable=unused-import,ungrouped-imports,invalid-name
@@ -108,3 +109,28 @@ def check_owner(
     if owner.object_id != token.user_id:
       raise errors.APIError(
           'Could not {}; not authorized'.format(action), 403)
+
+
+def load_owned_objects(
+    model: 'Type[typevars.OwnedModels]',
+    token: 'auth.JWT',
+    action: str,
+    *object_ids: 'typevars.ObjectID'
+    ) -> 'List[typevars.OwnedModels]':
+  """Load a set of tasks by ID, and check they are owned by the token bearer."""
+  objects: 'List[typevars.OwnedModels]' = []
+
+  for object_id in object_ids:
+    if object_id is None:
+      objects.append(None)
+      continue
+
+    try:
+      objects.append(model.get_by(object_id=object_id))
+    except db_errors.ObjectNotFoundError:
+      raise errors.APIError(
+          'Could not {0}; {1} {2} not found'.format(action, model.__name__, object_id), 410)
+
+  check_owner(token, action, *objects)
+
+  return objects
