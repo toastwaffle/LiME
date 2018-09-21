@@ -32,7 +32,7 @@ def tags_from_groups(
 @api.endpoint('/get_tags_and_groups')
 def get_tags_and_groups(
     token: 'auth.JWT'
-    ) -> 'Dict[str, Union[List[models.TagGroup], List[models.Tag]]]':
+    ) -> 'List[Union[models.TagGroup], List[models.Tag]]':
   """Get all tags and tag groups owned by the token bearer."""
   groups = list(token.user.tag_groups.all())
 
@@ -58,7 +58,7 @@ def add_tag(
     token: 'auth.JWT',
     title: str,
     group_id: 'Optional[typevars.ObjectID]' = None
-    ) -> 'List[models.TagGroup]':
+    ) -> 'List[Union[models.TagGroup], List[models.Tag]]':
   """Add a new tag in the given group."""
   mutated = []
   before = None
