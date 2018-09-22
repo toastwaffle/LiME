@@ -43,7 +43,7 @@ class Task(DB.Model):
   ]
 
   # Fields
-  title = DB.Column(DB.Unicode(200), nullable=False)
+  title = DB.Column(DB.UnicodeText(), nullable=False)
   completed = DB.Column(DB.Boolean(), nullable=False, default=False)
   notes = DB.Column(DB.UnicodeText(), nullable=False, default='')
 
