@@ -107,7 +107,7 @@ class Tag(DB.Model):
           'tags',
           lazy='joined'
       ),
-      secondary=ORDERING_LINK,
+      secondary=TAG_TASK_LINK,
       lazy='dynamic'
   )
 
