@@ -39,11 +39,11 @@ pyjwt==1.6.4
 pylint==2.1.1
 python-dateutil==2.7.3    # via alembic
 python-editor==1.0.3      # via alembic
-requests==2.19.1          # via bpython
+requests==2.20.1          # via bpython
 retype==17.12.0           # via monkeytype
 six==1.11.0               # via astroid, bcrypt, blessings, bpython, pip-tools, python-dateutil
 sqlalchemy==1.2.11        # via alembic, flask-sqlalchemy
-typed-ast==1.1.0          # via retype
+typed-ast==1.1.0          # via astroid, retype
 typing==3.6.6             # via curtsies
 urllib3==1.23             # via requests
 wcwidth==0.1.7            # via curtsies
