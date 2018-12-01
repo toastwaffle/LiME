@@ -14,7 +14,6 @@ cffi==1.11.5              # via bcrypt
 chardet==3.0.4            # via requests
 click==6.7                # via flask, pip-tools, retype
 curtsies==0.3.0           # via bpython
-first==2.0.1              # via pip-tools
 flask-migrate==2.3.1
 flask-script==2.0.6
 flask-sqlalchemy==2.3.2
@@ -31,7 +30,7 @@ mccabe==0.6.1             # via pylint
 monkeytype==18.8.0
 newrelic==4.6.0.106
 passlib==1.7.1
-pip-tools==2.0.2
+pip-tools==3.1.0
 pycparser==2.18           # via cffi
 pygments==2.2.0           # via bpython
 pygresql==5.0.6
