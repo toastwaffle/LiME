@@ -36,7 +36,7 @@ pycparser==2.18           # via cffi
 pygments==2.2.0           # via bpython
 pygresql==5.0.6
 pyjwt==1.6.4
-pylint==2.1.1
+pylint==2.2.2
 python-dateutil==2.7.3    # via alembic
 python-editor==1.0.3      # via alembic
 requests==2.20.1          # via bpython
