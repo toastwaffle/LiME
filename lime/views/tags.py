@@ -90,17 +90,17 @@ def add_tag(
   return [m for m in set(mutated) if m is not None]
 
 
-@api.endpoint('/add_tag_to_tasks')
-def add_tag_to_tasks(
+@api.endpoint('/apply_tag_to_tasks')
+def apply_tag_to_tasks(
     token: 'auth.JWT',
     tag_id: 'typevars.ObjectID',
     task_ids: 'List[typevars.ObjectID]'
     ) -> 'List[models.Task]':
   """Add a tag to tasks, enforcing mutual exclusivity of tags in groups."""
   (new_tag,) = auth.load_owned_objects(
-      models.Tag, token, 'add tag to tasks', tag_id)
+      models.Tag, token, 'apply tag to tasks', tag_id)
   tasks = auth.load_owned_objects(
-      models.Task, token, 'add tag to tasks', *task_ids)
+      models.Task, token, 'apply tag to tasks', *task_ids)
 
   for task in tasks:
     if new_tag.group_id is not None:
