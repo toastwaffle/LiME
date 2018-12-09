@@ -62,11 +62,11 @@ def add_tag(
   """Add a new tag in the given group."""
   mutated = []
   before = None
+  owner = None
 
   if group_id is not None:
-    owner = None
-    group = models.TagGroup.get_by(object_id=group_id)
-    auth.check_owner(token, 'add tag', group)
+    (group,) = auth.load_owned_objects(
+        models.TagGroup, token, 'add tag', group_id)
 
     mutated.append(group)
 
