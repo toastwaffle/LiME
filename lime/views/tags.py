@@ -140,3 +140,31 @@ def remove_tag_from_tasks(
   return tasks
 
 
+@api.endpoint('/delete_tag_group')
+def delete_tag_group(
+    token: 'auth.JWT',
+    group_id: 'typevars.ObjectID'
+    ) -> 'Dict[None, None]':
+  """Delete a tag group and all its tags."""
+  (group,) = auth.load_owned_objects(
+      models.TagGroup, token, 'delete tag group', group_id)
+
+  db.DB.session.delete(group)
+  db.DB.session.commit()
+
+  return {}
+
+
+@api.endpoint('/delete_tag')
+def delete_tag(
+    token: 'auth.JWT',
+    tag_id: 'typevars.ObjectID'
+    ) -> 'Dict[None, None]':
+  """Delete a tag."""
+  (tag,) = auth.load_owned_objects(
+      models.Tag, token, 'delete tag', tag_id)
+
+  db.DB.session.delete(tag)
+  db.DB.session.commit()
+
+  return {}
