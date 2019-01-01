@@ -28,7 +28,7 @@ mako==1.0.7               # via alembic
 markupsafe==1.0           # via jinja2, mako
 mccabe==0.6.1             # via pylint
 monkeytype==18.8.0
-newrelic==4.6.0.106
+newrelic==4.8.0.110
 passlib==1.7.1
 pip-tools==3.3.1
 pycparser==2.18           # via cffi
