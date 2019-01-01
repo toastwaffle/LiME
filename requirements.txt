@@ -6,7 +6,7 @@
 #
 alembic==1.0.0            # via flask-migrate
 astroid==2.0.4            # via pylint
-bcrypt==3.1.4
+bcrypt==3.1.5
 blessings==1.7            # via curtsies
 bpython==0.17.1
 certifi==2018.8.24        # via requests
