@@ -33,7 +33,7 @@ newrelic==4.8.0.110
 passlib==1.7.1
 pip-tools==3.3.1
 pycparser==2.18           # via cffi
-pygments==2.2.0           # via bpython
+pygments==2.3.1           # via bpython
 pygresql==5.0.6
 pyjwt==1.7.1
 pylint==2.2.2
