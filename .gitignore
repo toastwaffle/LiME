@@ -29,3 +29,6 @@ pip-selfcheck.json
 
 # config submodule
 lime/config/
+
+# bazel outputs
+bazel-*
