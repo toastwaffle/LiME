@@ -6,6 +6,12 @@ git_repository(
     commit = "cc4cbf2",
 )
 
+git_repository(
+    name = "subpar",
+    remote = "https://github.com/google/subpar",
+    tag = "1.0.0",
+)
+
 load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories")
 
 pip_repositories()

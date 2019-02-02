@@ -1,6 +1,7 @@
 load("@lime_deps//:requirements.bzl", "requirement")
+load("@subpar//:subpar.bzl", "par_binary")
 
-py_binary(
+par_binary(
     name = "command",
     srcs = ["command.py"],
     deps = [
