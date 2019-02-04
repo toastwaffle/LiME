@@ -1,4 +1,5 @@
 load("@lime_deps//:requirements.bzl", "requirement")
+load("//:requirements.bzl", "ALL_PIP_DEPS")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -46,6 +47,17 @@ py_library(
     ]
 )
 
+py_test(
+    name = "setting_test",
+    srcs = ["setting_test.py"],
+    deps = [
+        ":setting",
+        ":user",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
+    python_version = "PY3",
+)
+
 py_library(
     name = "tag",
     srcs = ["tag.py"],
@@ -53,6 +65,16 @@ py_library(
         ":db",
         "//lime/util:api",
     ]
+)
+
+py_test(
+    name = "tag_test",
+    srcs = ["tag_test.py"],
+    deps = [
+        ":models",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
+    python_version = "PY3",
 )
 
 py_library(
@@ -64,6 +86,16 @@ py_library(
     ]
 )
 
+py_test(
+    name = "tag_group_test",
+    srcs = ["tag_group_test.py"],
+    deps = [
+        ":models",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
+    python_version = "PY3",
+)
+
 py_library(
     name = "task",
     srcs = ["task.py"],
@@ -71,6 +103,16 @@ py_library(
         ":db",
         "//lime/util:api",
     ]
+)
+
+py_test(
+    name = "task_test",
+    srcs = ["task_test.py"],
+    deps = [
+        ":models",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
+    python_version = "PY3",
 )
 
 py_library(
@@ -83,4 +125,14 @@ py_library(
         "//lime/util:settings",
         "//lime/util:settings_enums",
     ]
+)
+
+py_test(
+    name = "user_test",
+    srcs = ["user_test.py"],
+    deps = [
+        ":models",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
+    python_version = "PY3",
 )
