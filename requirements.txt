@@ -20,7 +20,7 @@ flask-script==2.0.6
 flask-sqlalchemy==2.3.2
 flask==1.0.2
 greenlet==0.4.15          # via bpython
-idna==2.7                 # via requests
+idna==2.8                 # via requests
 isort==4.3.4              # via pylint
 itsdangerous==1.1.0       # via flask
 jinja2==2.10              # via flask
