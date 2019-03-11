@@ -5,7 +5,7 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 absl-py==0.7.0
-alembic==1.0.0            # via flask-migrate
+alembic==1.0.8            # via flask-migrate
 astroid==2.2.5            # via pylint
 bcrypt==3.1.6
 blessings==1.7            # via curtsies
