@@ -2,6 +2,7 @@
 
 import typing
 
+from ..database import db
 from ..util import api
 from ..util import errors as util_errors
 
@@ -44,5 +45,7 @@ def set_setting(
         'Cannot set setting {}'.format(key), 400)
 
   setattr(token.user, key, value)
+
+  db.DB.session.commit()
 
   return {}

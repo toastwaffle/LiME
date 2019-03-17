@@ -114,7 +114,6 @@ class SettingDescriptor(object):
       db.DB.session.add(setting)
 
     setting.value = val
-    db.DB.session.commit()
 
 
 def _check_enum(

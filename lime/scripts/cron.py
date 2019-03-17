@@ -1,5 +1,6 @@
 """Worker to run repeated tasks on a schedule."""
 
+import collections
 import contextlib
 import datetime
 import os
@@ -13,6 +14,7 @@ from lime import app
 # pylint: disable=unused-import,ungrouped-imports,invalid-name
 if typing.TYPE_CHECKING:
   from typing import (
+      Callable,
       Generator,
   )
 # pylint: enable=unused-import,ungrouped-imports,invalid-name
@@ -23,6 +25,7 @@ APP = app.APP
 @contextlib.contextmanager
 def file_lock(lock_file: str) -> 'Generator[None, None, None]':
   """Use a lock file to prevent multiple instances of the worker running."""
+  # TODO: consider writing an sh_test for this.
   if os.path.exists(lock_file):
     print('Only one script can run at once. Script is locked with {}'.format(
         lock_file))
@@ -35,7 +38,7 @@ def file_lock(lock_file: str) -> 'Generator[None, None, None]':
       os.remove(lock_file)
 
 
-def get_last_run_time(timestamp_file: str) -> 'datetime.datetime':
+def get_timestamp(timestamp_file: str) -> 'datetime.datetime':
   """Get the time at which the set of tasks was last run.
 
   Args:
@@ -66,38 +69,32 @@ def set_timestamp(timestamp_file: str, now: 'datetime.datetime') -> None:
     file_handle.write(now.strftime('%s'))
 
 
-def run_5_minutely(now: 'datetime.datetime') -> None:
-  """Run tasks which need to be run every 5 minutes.
+def is_due(timestamp_file: str, delta: 'datetime.timedelta',
+           now: 'datetime.datetime'):
+  """Test whether a set of tasks at a given frequency is due to be run."""
+  if now - get_timestamp(timestamp_file) < delta:
+    return False
 
-  Args:
-    now: (datetime.datetime) time at which the script was started
-  """
-  timestamp_file = os.path.abspath(
-      './{}_cron_timestamp_5min.txt'.format(APP.config['ENVIRONMENT'])
-  )
+  set_timestamp(timestamp_file, now)
 
-  if now - get_last_run_time(timestamp_file) < datetime.timedelta(minutes=5):
-    return
-
-  return
+  return True
 
 
-def run_20_minutely(now: 'datetime.datetime') -> None:
-  """Run tasks which need to be run every 20 minutes.
+def make_timestamp_file(delta):
+  """Generate the path to the timestamp file."""
+  return os.path.abspath('./{}_cron_timestamp_{}'.format(
+      APP.config['ENVIRONMENT'], delta.seconds))
 
-  Args:
-    now: (datetime.datetime) time at which the script was started
-  """
-  timestamp_file = os.path.abspath(
-      './{}_cron_timestamp_20min.txt'.format(APP.config['ENVIRONMENT'])
-  )
 
-  difference = now - get_last_run_time(timestamp_file)
+TASKS: 'Dict[datetime.timedelta, Callable]' = collections.defaultdict(list)
 
-  if difference < datetime.timedelta(minutes=20):
-    return
 
-  return
+def frequency(**kwargs) -> 'Callable[[Callable], Callable]':
+  """Register a task to run at a given frequency."""
+  def decorator(func: 'Callable') -> 'Callable':
+    TASKS[datetime.timedelta(**kwargs)].append(func)
+
+  return decorator
 
 
 class CronCommand(flask_script.Command):
@@ -113,6 +110,7 @@ class CronCommand(flask_script.Command):
     ):
       now = datetime.datetime.utcnow()
 
-      run_5_minutely(now)
-
-      run_20_minutely(now)
+      for delta, tasks in TASKS.items():
+        if is_due(make_timestamp_file(delta), delta, now):
+          for task in tasks:
+            task()

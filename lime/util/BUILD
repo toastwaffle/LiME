@@ -63,6 +63,17 @@ py_library(
 )
 
 py_library(
+    name = "testing",
+    srcs = ["testing.py"],
+    deps = [
+        "//lime:app",
+        "//lime/database:db",
+        "//lime/system:setup",
+    ],
+    testonly = 1,
+)
+
+py_library(
     name = "typevars",
     srcs = ["typevars.py"],
     deps = [

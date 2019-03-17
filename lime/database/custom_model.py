@@ -26,10 +26,6 @@ class CustomModel(flask_sqlalchemy.Model):
       nullable=False
   )
 
-  def __init__(self, **kwargs):
-    for key, value in kwargs.items():
-      setattr(self, key, value)
-
   def __repr__(self):
     return '<{0}({1})>'.format(self.__class__.__name__, self.object_id)
 

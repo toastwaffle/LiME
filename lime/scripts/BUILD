@@ -1,4 +1,5 @@
 load("@lime_deps//:requirements.bzl", "requirement")
+load("//:requirements.bzl", "ALL_PIP_DEPS")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -9,6 +10,16 @@ py_library(
         "//lime:app",
         requirement("flask_script"),
     ],
+)
+
+py_test(
+    name = "cron_test",
+    srcs = ["cron_test.py"],
+    deps = [
+        ":cron",
+        "//lime:app",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
 )
 
 py_library(

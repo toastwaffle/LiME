@@ -4,11 +4,34 @@ from unittest import mock
 
 from absl.testing import absltest
 
+from lime.database import db
 from lime.database import models
+from lime.util import testing
 
 
 class TaskTest(absltest.TestCase):
   """Tests for Task model."""
+
+  def test_has_children__with_child(self):
+    """Test Task.has_children property when the task has a child."""
+    with testing.test_setup():
+      user = models.User(name='test', email='test@test.com', password='test')
+      parent = models.Task(title='Parent', owner=user)
+      child = models.Task(title='Child', owner=user, parent=parent)
+      db.DB.session.add_all([user, parent, child])
+      db.DB.session.commit()
+
+      self.assertTrue(parent.has_children)
+
+  def test_has_children__no_child(self):
+    """Test Task.has_children property when the task has no child."""
+    with testing.test_setup():
+      user = models.User(name='test', email='test@test.com', password='test')
+      parent = models.Task(title='Parent', owner=user)
+      db.DB.session.add_all([user, parent])
+      db.DB.session.commit()
+
+      self.assertFalse(parent.has_children)
 
   def test_before_id(self):
     """Test Task.before_id property when task has a before task."""

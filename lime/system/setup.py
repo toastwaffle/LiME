@@ -35,7 +35,7 @@ def configure_jinja2() -> None:
 def load_blueprints() -> None:
   """Attach the blueprints to the app."""
   # Views are registered to the API blueprint as a side-effect of this import.
-  from ..views import all_views  # pylint: disable=unused-variable
+  from ..views import all_views  # pylint: disable=unused-import
 
   # Only register the /quitquitquitz handler in debug mode.
   if APP.config['DEBUG']:

@@ -109,7 +109,9 @@ py_test(
     name = "task_test",
     srcs = ["task_test.py"],
     deps = [
+        ":db",
         ":models",
+        "//lime/util:testing",
         requirement("absl-py"),
     ] + ALL_PIP_DEPS,
     python_version = "PY3",
@@ -131,7 +133,10 @@ py_test(
     name = "user_test",
     srcs = ["user_test.py"],
     deps = [
+        ":db",
         ":models",
+        "//lime/util:settings_enums",
+        "//lime/util:testing",
         requirement("absl-py"),
     ] + ALL_PIP_DEPS,
     python_version = "PY3",
