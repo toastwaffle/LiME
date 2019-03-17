@@ -38,7 +38,7 @@ pygresql==5.0.6
 pyjwt==1.7.1
 pylint==2.3.1
 python-dateutil==2.7.3    # via alembic
-python-editor==1.0.3      # via alembic
+python-editor==1.0.4      # via alembic
 requests==2.21.0          # via bpython
 retype==17.12.0           # via monkeytype
 six==1.12.0               # via absl-py, astroid, bcrypt, blessings, bpython, pip-tools, python-dateutil
