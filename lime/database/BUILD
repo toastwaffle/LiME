@@ -19,7 +19,7 @@ py_library(
     deps = [
         ":custom_model",
         requirement("flask_sqlalchemy"),
-    ]
+    ],
 )
 
 py_library(
@@ -36,7 +36,7 @@ py_library(
         ":tag_group",
         ":task",
         ":user",
-    ]
+    ],
 )
 
 py_library(
@@ -44,7 +44,7 @@ py_library(
     srcs = ["setting.py"],
     deps = [
         ":db",
-    ]
+    ],
 )
 
 py_test(
@@ -64,7 +64,7 @@ py_library(
     deps = [
         ":db",
         "//lime/util:api",
-    ]
+    ],
 )
 
 py_test(
@@ -83,7 +83,7 @@ py_library(
     deps = [
         ":db",
         "//lime/util:api",
-    ]
+    ],
 )
 
 py_test(
@@ -102,7 +102,7 @@ py_library(
     deps = [
         ":db",
         "//lime/util:api",
-    ]
+    ],
 )
 
 py_test(
@@ -126,7 +126,7 @@ py_library(
         "//lime/util:passwords",
         "//lime/util:settings",
         "//lime/util:settings_enums",
-    ]
+    ],
 )
 
 py_test(

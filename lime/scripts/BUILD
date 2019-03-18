@@ -20,6 +20,7 @@ py_test(
         "//lime:app",
         requirement("absl-py"),
     ] + ALL_PIP_DEPS,
+    python_version = "PY3",
 )
 
 py_library(
