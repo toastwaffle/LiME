@@ -63,8 +63,6 @@ def main():
   try:
     manager.run()
   except SystemExit as exc:
-    # Monkeytype fails if the program exits abnormally. SystemExit is raised by
-    # the /quitquitquitz handler.
     print(exc)
 
 

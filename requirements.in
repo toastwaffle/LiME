@@ -5,7 +5,6 @@ flask
 flask-migrate
 flask-script
 flask-sqlalchemy
-monkeytype
 newrelic
 passlib
 pip-tools
