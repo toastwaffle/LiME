@@ -14,3 +14,10 @@ py_binary(
     data = glob(["migrations/**/*"]),
     python_version = "PY3",
 )
+
+py_runtime(
+    name = "host_python3",
+    interpreter_path = "/usr/bin/python3",
+    files = [],
+    visibility = ["//visibility:public"],
+)
