@@ -32,7 +32,7 @@ monkeytype==19.1.1
 newrelic==4.14.0.115
 passlib==1.7.1
 pip-tools==3.4.0
-pycparser==2.18           # via cffi
+pycparser==2.19           # via cffi
 pygments==2.3.1           # via bpython
 pygresql==5.0.6
 pyjwt==1.7.1
