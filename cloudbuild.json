@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "name": "gcr.io/samuellittley-personal/lime-frontend-builder",
+      "entrypoint": "/bin/bash",
+      "args": ["-c", "mv lime/testing_config lime/config"]
+    },
+    {
+      "name": "gcr.io/samuellittley-personal/lime-frontend-builder",
+      "args": ["test", "...:all", "--test_output=errors", "--python_top=:host_python3"]
+    },
+  ]
+}
