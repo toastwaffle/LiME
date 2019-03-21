@@ -7,6 +7,7 @@ import functools
 import json
 
 import flask
+from absl import logging
 
 from . import crossdomain
 from . import errors
@@ -36,6 +37,8 @@ def register_serializable(_identifier: 'Optional[str]' = None) -> 'Callable[[Typ
   def decorator(cls: 'Type') -> 'Type':
     """The decorator."""
     identifier = _identifier or cls.__name__
+
+    logging.debug('Registering %r as "%s"', cls, identifier)
 
     if not hasattr(cls, 'to_json'):
       raise errors.SerializationError(
@@ -94,6 +97,7 @@ def endpoint(path: str, require_auth: bool = True, discard_token: bool = False) 
     try:
       return json.loads(flask.request.data, object_hook=from_dict)
     except json.JSONDecodeError as err:
+      logging.exception(err)
       raise errors.APIError('Could not parse request: {}'.format(err), 400)
 
   def check_auth(request: 'Dict[str, Any]') -> None:
@@ -104,11 +108,11 @@ def endpoint(path: str, require_auth: bool = True, discard_token: bool = False) 
     try:
       request['token'].check_valid()
     except errors.AuthenticationError as err:
-      raise errors.APIError('Authentication token not valid: {}'.format(err),
-                            401)
+      logging.exception(err)
+      raise errors.APIError('Authentication token not valid.', 401)
     except AttributeError as err:
-      raise errors.APIError(
-          'Could not parse authentication token: {}'.format(err), 401)
+      logging.exception(err)
+      raise errors.APIError('Could not parse authentication token.', 401)
 
   def wrap(func: 'Callable') -> 'Callable':
     """Wrap the API function to provide JSON interface and auth checks."""

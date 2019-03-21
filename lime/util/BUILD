@@ -8,6 +8,7 @@ py_library(
     deps = [
         ":crossdomain",
         ":errors",
+        requirement("absl-py"),
         requirement("flask"),
     ],
 )
