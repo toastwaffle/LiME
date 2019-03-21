@@ -41,6 +41,21 @@ py_library(
     ],
 )
 
+py_test(
+    name = "auth_test",
+    srcs = ["auth_test.py"],
+    deps = [
+        ":auth",
+        ":errors",
+        ":testing",
+        "//lime:app",
+        "//lime/database:db",
+        "//lime/database:models",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
+    python_version = "PY3",
+)
+
 py_library(
     name = "crossdomain",
     srcs = ["crossdomain.py"],

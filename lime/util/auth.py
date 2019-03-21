@@ -117,7 +117,7 @@ def load_owned_objects(
     action: str,
     *object_ids: 'typevars.ObjectID'
     ) -> 'List[typevars.OwnedModels]':
-  """Load a set of tasks by ID, and check they are owned by the token bearer."""
+  """Load a set of objects by ID and check they're owned by the token bearer."""
   objects: 'List[typevars.OwnedModels]' = []
 
   for object_id in object_ids:
