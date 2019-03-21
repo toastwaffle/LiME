@@ -13,7 +13,7 @@ bpython==0.17.1
 certifi==2019.3.9         # via requests
 cffi==1.12.2              # via bcrypt
 chardet==3.0.4            # via requests
-click==7.0                # via flask, pip-tools, retype
+click==7.0                # via flask, pip-tools
 curtsies==0.3.0           # via bpython
 flask-migrate==2.4.0
 flask-script==2.0.6
@@ -41,9 +41,9 @@ python-editor==1.0.4      # via alembic
 requests==2.21.0          # via bpython
 six==1.12.0               # via absl-py, astroid, bcrypt, blessings, bpython, pip-tools, python-dateutil
 sqlalchemy==1.3.1         # via alembic, flask-sqlalchemy
-typed-ast==1.3.1          # via astroid, retype
+typed-ast==1.3.1          # via astroid
 typing==3.6.6             # via curtsies
 urllib3==1.24.1           # via requests
 wcwidth==0.1.7            # via curtsies
-werkzeug==0.15.0          # via flask
+werkzeug==0.15.1          # via flask
 wrapt==1.11.1             # via astroid
