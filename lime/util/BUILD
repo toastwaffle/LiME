@@ -1,4 +1,5 @@
 load("@lime_deps//:requirements.bzl", "requirement")
+load("//:requirements.bzl", "ALL_PIP_DEPS")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,6 +12,20 @@ py_library(
         requirement("absl-py"),
         requirement("flask"),
     ],
+)
+
+py_test(
+    name = "api_test",
+    srcs = ["api_test.py"],
+    deps = [
+        ":api",
+        ":errors",
+        ":testing",
+        "//lime:app",
+        "//lime/system:setup",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
+    python_version = "PY3",
 )
 
 py_library(
