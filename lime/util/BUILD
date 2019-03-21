@@ -66,8 +66,11 @@ py_library(
     name = "testing",
     srcs = ["testing.py"],
     deps = [
+        ":api",
+        ":auth",
         "//lime:app",
         "//lime/database:db",
+        "//lime/database:models",
         "//lime/system:setup",
     ],
     testonly = 1,
