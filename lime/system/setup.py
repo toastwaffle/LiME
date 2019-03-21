@@ -26,12 +26,6 @@ def load_config(environment: 'Optional[str]' = None) -> bool:
   )
 
 
-def configure_jinja2() -> None:
-  """Tell jinja2 to trim whitespace from blocks."""
-  APP.jinja_env.trim_blocks = True
-  APP.jinja_env.lstrip_blocks = True
-
-
 def load_blueprints() -> None:
   """Attach the blueprints to the app."""
   # Views are registered to the API blueprint as a side-effect of this import.
@@ -49,7 +43,6 @@ def configure_app(environment: 'Optional[str]' = None) -> bool:
   if not load_config(environment):
     return False
 
-  configure_jinja2()
   load_blueprints()
   DB.init_app(APP)
 
