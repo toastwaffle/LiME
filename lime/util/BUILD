@@ -89,6 +89,19 @@ py_library(
     ],
 )
 
+py_test(
+    name = "passwords_test",
+    srcs = ["passwords_test.py"],
+    deps = [
+        ":passwords",
+        ":testing",
+        "//lime:app",
+        "//lime/database:models",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
+    python_version = "PY3",
+)
+
 py_library(
     name = "settings",
     srcs = ["settings.py"],
