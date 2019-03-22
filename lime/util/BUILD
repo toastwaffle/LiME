@@ -64,6 +64,17 @@ py_library(
     ],
 )
 
+py_test(
+    name = "crossdomain_test",
+    srcs = ["crossdomain_test.py"],
+    deps = [
+        ":crossdomain",
+        "//lime:app",
+        requirement("absl-py"),
+    ] + ALL_PIP_DEPS,
+    python_version = "PY3",
+)
+
 py_library(
     name = "errors",
     srcs = ["errors.py"],
