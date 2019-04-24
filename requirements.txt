@@ -30,7 +30,7 @@ markupsafe==1.1.1         # via jinja2, mako
 mccabe==0.6.1             # via pylint
 newrelic==4.18.0.118
 passlib==1.7.1
-pip-tools==3.6.0
+pip-tools==3.6.1
 pycparser==2.19           # via cffi
 pygments==2.3.1           # via bpython
 pygresql==5.0.6
