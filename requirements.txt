@@ -18,7 +18,7 @@ curtsies==0.3.0           # via bpython
 flask-migrate==2.4.0
 flask-script==2.0.6
 flask-sqlalchemy==2.4.0
-flask==1.0.2
+flask==1.0.3
 greenlet==0.4.15          # via bpython
 idna==2.8                 # via requests
 isort==4.3.20             # via pylint
