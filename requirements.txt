@@ -25,7 +25,7 @@ isort==4.3.21             # via pylint
 itsdangerous==1.1.0       # via flask
 jinja2==2.10.1            # via flask
 lazy-object-proxy==1.4.1  # via astroid
-mako==1.0.14              # via alembic
+mako==1.1.0               # via alembic
 markupsafe==1.1.1         # via jinja2, mako
 mccabe==0.6.1             # via pylint
 newrelic==4.20.1.121
