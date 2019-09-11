@@ -10,7 +10,7 @@ astroid==2.2.5            # via pylint
 bcrypt==3.1.7
 blessings==1.7            # via curtsies
 bpython==0.18
-certifi==2019.6.16        # via requests
+certifi==2019.9.11        # via requests
 cffi==1.12.3              # via bcrypt
 chardet==3.0.4            # via requests
 click==7.0                # via flask, pip-tools
