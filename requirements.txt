@@ -6,7 +6,7 @@
 #
 absl-py==0.8.0
 alembic==1.1.0            # via flask-migrate
-astroid==2.2.5            # via pylint
+astroid==2.3.3            # via pylint
 bcrypt==3.1.7
 blessings==1.7            # via curtsies
 bpython==0.18
