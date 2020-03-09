@@ -4,21 +4,21 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-absl-py==0.8.0
+absl-py==0.8.0            # via -r requirements.in
 alembic==1.1.0            # via flask-migrate
 astroid==2.2.5            # via pylint
-bcrypt==3.1.7
+bcrypt==3.1.7             # via -r requirements.in
 blessings==1.7            # via curtsies
-bpython==0.18
+bpython==0.18             # via -r requirements.in
 certifi==2019.9.11        # via requests
 cffi==1.12.3              # via bcrypt
 chardet==3.0.4            # via requests
 click==7.0                # via flask, pip-tools
 curtsies==0.3.0           # via bpython
-flask-migrate==2.5.2
-flask-script==2.0.6
-flask-sqlalchemy==2.4.0
-flask==1.1.1
+flask-migrate==2.5.2      # via -r requirements.in
+flask-script==2.0.6       # via -r requirements.in
+flask-sqlalchemy==2.4.0   # via -r requirements.in, flask-migrate
+flask==1.1.1              # via -r requirements.in, flask-migrate, flask-script, flask-sqlalchemy
 greenlet==0.4.15          # via bpython
 idna==2.8                 # via requests
 isort==4.3.21             # via pylint
@@ -28,14 +28,14 @@ lazy-object-proxy==1.4.2  # via astroid
 mako==1.1.0               # via alembic
 markupsafe==1.1.1         # via jinja2, mako
 mccabe==0.6.1             # via pylint
-newrelic==5.0.2.126
-passlib==1.7.1
-pip-tools==4.1.0
+newrelic==5.10.0.138      # via -r requirements.in
+passlib==1.7.1            # via -r requirements.in
+pip-tools==4.1.0          # via -r requirements.in
 pycparser==2.19           # via cffi
 pygments==2.4.2           # via bpython
-pygresql==5.1
-pyjwt==1.7.1
-pylint==2.3.1
+pygresql==5.1             # via -r requirements.in
+pyjwt==1.7.1              # via -r requirements.in
+pylint==2.3.1             # via -r requirements.in
 python-dateutil==2.8.0    # via alembic
 python-editor==1.0.4      # via alembic
 requests==2.22.0          # via bpython
